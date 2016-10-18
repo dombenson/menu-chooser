@@ -10,6 +10,7 @@ CREATE TABLE `users` (
 CREATE TABLE `events` (
   `eventid` INT NOT NULL AUTO_INCREMENT,
   `userid` INT NOT NULL,
+  `name` VARCHAR(64) NOT NULL,
   `location` VARCHAR(64) NOT NULL,
   `date` DATETIME NOT NULL,
   PRIMARY KEY (`eventid`),

@@ -12,11 +12,14 @@ type User interface {
 }
 
 type user struct {
-	id  int
+	id    int
 	name  string
 	email string
 	pass  string
 }
+
+const GetUserSQL = "SELECT `userid`,`name`,`email`,`pass` FROM `users` WHERE `userid` = ?"
+const GetUserByEmailSQL = "SELECT `userid`,`name`,`email`,`pass` FROM `users` WHERE `email` = ?"
 
 func MakeUser(rows *sql.Rows) (user User, err error) {
 	retUser := &user{}
