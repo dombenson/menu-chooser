@@ -18,9 +18,9 @@ type option struct {
 
 const GetOptionsSQL = "SELECT `optionid`,`courseid`,`name`,`description` FROM `options` WHERE `courseid` = ? ORDER BY name ASC"
 
-func MakeOption(rows *sql.Rows) (option Option, err error) {
+func MakeOption(rows *sql.Rows) (newOption Option, err error) {
 	retOption := &option{}
-	option = retOption
+	newOption = retOption
 	err = rows.Scan(&retOption.id, &retOption.courseid, &retOption.name, &retOption.description)
 	return
 }
@@ -31,9 +31,9 @@ func (this *option) Name() string {
 func (this *option) Description() string {
 	return this.description
 }
-func (this *option) ID() string {
+func (this *option) ID() int {
 	return this.id
 }
-func (this *option) CourseID() string {
+func (this *option) CourseID() int {
 	return this.courseid
 }

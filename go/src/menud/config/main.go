@@ -7,6 +7,9 @@ import (
 
 const iniFilePath = "config.ini"
 
+const poolSection = "pool"
+const poolSize = "size"
+
 const dbSection = "db"
 
 const userKey = "user"
@@ -16,7 +19,7 @@ const dbKey = "database"
 
 var iniFile ini.Getter
 
-func Init() {
+func init() {
 	var err error
 	iniFile, err = ini.LoadFile(iniFilePath)
 	if err != nil {
@@ -32,6 +35,18 @@ func getWithDefault(section, key, defValue string) (value string) {
 	return
 }
 
+func getIntWithDefault(section, key string, defValue int) (value int) {
+	value, ok := iniFile.GetInt(section, key)
+	if !ok {
+		value = defValue
+	}
+	return
+}
+
 func DBConnString() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", getWithDefault(dbSection, userKey, "menud"), getWithDefault(dbSection, passKey, ""), getWithDefault(dbSection, hostKey, "127.0.0.1"), getWithDefault(dbSection, dbKey, "menud"))
+}
+
+func ConnectionPoolSize() int {
+	return getIntWithDefault(poolSection, poolSize, 4)
 }

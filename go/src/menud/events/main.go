@@ -24,9 +24,9 @@ type event struct {
 const GetEventsForUserSQL = "SELECT `eventid` FROM `events` WHERE `userid` = ? ORDER BY date ASC"
 const GetEventSQL = "SELECT `eventid`,`userid`,`name`,`location`,`date` FROM `events` WHERE `eventid` = ?"
 
-func MakeEvent(rows *sql.Rows) (event Event, err error) {
+func MakeEvent(rows *sql.Rows) (newEvent Event, err error) {
 	retEvent := &event{}
-	event = retEvent
+	newEvent = retEvent
 	err = rows.Scan(&retEvent.id, &retEvent.userid, &retEvent.name, &retEvent.location, &retEvent.date)
 	return
 }
@@ -37,10 +37,10 @@ func (this *event) Name() string {
 func (this *event) Location() string {
 	return this.location
 }
-func (this *event) ID() string {
+func (this *event) ID() int {
 	return this.id
 }
-func (this *event) UserID() string {
+func (this *event) UserID() int {
 	return this.userid
 }
 func (this *event) Date() time.Time {

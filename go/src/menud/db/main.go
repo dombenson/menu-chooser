@@ -16,12 +16,13 @@ type Connection interface {
 	GetUser(int) (users.User, error)
 	GetUserByEmailPassword(email, password string) (users.User, error)
 	GetAttendee(id int) (_ attendees.Attendee, err error)
-	GetAttendees(eventId int) (attendees []attendees.Attendee, err error) 
+	GetAttendees(eventId int) (attendees []attendees.Attendee, err error)
 	GetAttendeeByKey(token string) (attendee attendees.Attendee, err error)
 	GetCourses(eventId int) (crses []courses.Course, err error)
 	GetOptions(courseId int) (opts []options.Option, err error)
 	GetEvent(id int) (_ events.Event, err error)
 	GetEventsForUser(userId int) (events []events.Event, err error)
+	GetSelection(attendeeId, courseId int) (optionId int, err error)
 }
 
 type connection struct {
@@ -51,39 +52,39 @@ func (this *connection) connect() {
 	}
 	this.getUserStmt, err = this.baseConn.Prepare(users.GetUserSQL)
 	if err != nil {
-		panic("Unable to prepare user statement")
+		panic("Unable to prepare user statement: "+err.Error())
 	}
 	this.getUserEmailStmt, err = this.baseConn.Prepare(users.GetUserByEmailSQL)
 	if err != nil {
-		panic("Unable to prepare get user by email statement")
+		panic("Unable to prepare get user by email statement: " + err.Error())
 	}
 	this.getAttendeeStmt, err = this.baseConn.Prepare(attendees.GetAttendeeSQL)
 	if err != nil {
-		panic("Unable to prepare get attendee statement")
+		panic("Unable to prepare get attendee statement: " + err.Error())
 	}
 	this.getEventAttendeesStmt, err = this.baseConn.Prepare(attendees.GetAttendeesByEventSQL)
 	if err != nil {
-		panic("Unable to prepare get event attendees statement")
+		panic("Unable to prepare get event attendees statement: "+err.Error())
 	}
 	this.getUserEventsStmt, err = this.baseConn.Prepare(events.GetEventsForUserSQL)
 	if err != nil {
-		panic("Unable to prepare get events for user statement")
+		panic("Unable to prepare get events for user statement: "+err.Error())
 	}
 	this.getEventStmt, err = this.baseConn.Prepare(events.GetEventSQL)
 	if err != nil {
-		panic("Unable to prepare get event statement")
+		panic("Unable to prepare get event statement: "+err.Error())
 	}
 	this.getCoursesStmt, err = this.baseConn.Prepare(courses.GetCoursesSQL)
 	if err != nil {
-		panic("Unable to prepare get courses statement")
+		panic("Unable to prepare get courses statement: "+err.Error())
 	}
 	this.getOptionsStmt, err = this.baseConn.Prepare(options.GetOptionsSQL)
 	if err != nil {
-		panic("Unable to prepare get options statement")
+		panic("Unable to prepare get options statement: "+err.Error())
 	}
 	this.getSelectionStmt, err = this.baseConn.Prepare("SELECT `optionid` FROM `selections` WHERE `courseid` = ? AND `attendeeid` = ?")
 	if err != nil {
-		panic("Unable to prepare get selection statement")
+		panic("Unable to prepare get selection statement: "+err.Error())
 	}
 }
 
@@ -129,9 +130,9 @@ func (this *connection) GetAttendee(id int) (_ attendees.Attendee, err error) {
 	return attendees.MakeAttendee(rows)
 }
 
-func (this *connection) GetAttendees(eventId int) (attendees []attendees.Attendee, err error) {
+func (this *connection) GetAttendees(eventId int) (atts []attendees.Attendee, err error) {
 	var rows *sql.Rows
-	attendees = make([]attendees.Attendee, 0, 5)
+	atts = make([]attendees.Attendee, 0, 5)
 	rows, err = this.getEventAttendeesStmt.Query(eventId)
 	if err != nil {
 		return
@@ -147,10 +148,10 @@ func (this *connection) GetAttendees(eventId int) (attendees []attendees.Attende
 		}
 		curAttendee, lastErr = this.GetAttendee(curId)
 		if lastErr == nil {
-			attendees = append(attendees, curAttendee)
+			atts = append(atts, curAttendee)
 		}
 	}
-	if len(attendees) < 1 {
+	if len(atts) < 1 {
 		err = lastErr
 	}
 	return
@@ -229,9 +230,9 @@ func (this *connection) GetEvent(id int) (_ events.Event, err error) {
 	return events.MakeEvent(rows)
 }
 
-func (this *connection) GetEventsForUser(userId int) (events []events.Event, err error) {
+func (this *connection) GetEventsForUser(userId int) (ents []events.Event, err error) {
 	var rows *sql.Rows
-	events = make([]events.Event, 0, 5)
+	ents = make([]events.Event, 0, 5)
 	rows, err = this.getOptionsStmt.Query(userId)
 	if err != nil {
 		return
@@ -245,11 +246,11 @@ func (this *connection) GetEventsForUser(userId int) (events []events.Event, err
 		if lastErr == nil {
 			curEvent, lastErr = this.GetEvent(curId)
 			if lastErr == nil {
-				events = append(events, curEvent)
+				ents = append(ents, curEvent)
 			}
 		}
 	}
-	if len(events) < 1 {
+	if len(ents) < 1 {
 		err = lastErr
 	}
 	return

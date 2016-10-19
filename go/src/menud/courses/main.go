@@ -14,11 +14,11 @@ type course struct {
 	order   int
 }
 
-const GetCoursesSQL = "SELECT `courseid`,`eventid`,`name`,`order` FROM `courses` WHERE `eventid` = ? ORDER BY order,courseid ASC"
+const GetCoursesSQL = "SELECT `courseid`,`eventid`,`name`,`order` FROM `courses` WHERE `eventid` = ? ORDER BY `order`,`courseid` ASC"
 
-func MakeCourse(rows *sql.Rows) (course Course, err error) {
+func MakeCourse(rows *sql.Rows) (newCourse Course, err error) {
 	retCourse := &course{}
-	course = retCourse
+	newCourse = retCourse
 	err = rows.Scan(&retCourse.id, &retCourse.eventid, &retCourse.name, &retCourse.order)
 	return
 }
@@ -26,6 +26,6 @@ func MakeCourse(rows *sql.Rows) (course Course, err error) {
 func (this *course) Name() string {
 	return this.name
 }
-func (this *course) ID() string {
+func (this *course) ID() int {
 	return this.id
 }

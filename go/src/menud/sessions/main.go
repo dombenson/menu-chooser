@@ -1,75 +1,85 @@
 package sessions
 
+import (
+	"crypto/rand"
+	"encoding/base64"
+	"errors"
+	"sync"
+	"time"
+)
+
 type Session interface {
-	GetUserId()(int)
-	GetAttendeeId()(int)
-	GetEventId()(int)
-	SetUserId(int)()
-	SetAttendeeId(int)()
-	SetEventId(int)()
-	GetSessionId()(string)
+	GetUserId() int
+	GetAttendeeId() int
+	GetEventId() int
+	SetUserId(int)
+	SetAttendeeId(int)
+	SetEventId(int)
+	GetSessionId() string
 }
 
 var sessionStoreLock sync.RWMutex
 var sessionStore map[string]*session
 
-func Init() {
+func init() {
 	sessionStore = make(map[string]*session)
 }
 
 type session struct {
-	userId int
+	userId     int
 	attendeeId int
-	eventId int
-	sessionId string
-	expires time.Time
+	eventId    int
+	sessionId  string
+	expires    time.Time
 }
 
-func(this *session) GetUserId() int {
+func (this *session) GetUserId() int {
 	return this.userId
 }
-func(this *session) GetSessionId() string {
+func (this *session) GetSessionId() string {
 	return this.eventId
 }
-func(this *session) GetAttendeeId() int {
+func (this *session) GetAttendeeId() int {
 	return this.attendeeId
 }
-func(this *session) GetEventId() int {
+func (this *session) GetEventId() int {
 	return this.sessionId
 }
 
-func(this *session) SetUserId(id int) {
+func (this *session) SetUserId(id int) {
 	this.userId = id
 }
-func(this *session) SetAttendeeId(id int) {
+func (this *session) SetAttendeeId(id int) {
 	this.attendeeId = id
 }
-func(this *session) GetEventId(id int) {
+func (this *session) SetEventId(id int) {
 	this.eventId = id
 }
 
-func Get(sessionId string)(sess Session, err error) {
+func Get(sessionId string) (sess Session, err error) {
 	var bFound bool
 	sessionStoreLock.RLock()
-	sess, bFound = sessionStore[sessionId]
-	sessionStoreLock.RUnLock()
+	var locSess *session
+	locSess, bFound = sessionStore[sessionId]
+	sessionStoreLock.RUnlock()
 	if !bFound {
 		err = errors.New("Not found")
 		return
 	}
-	if(sess.expires.After(time.Now())) {
+	if locSess.expires.After(time.Now()) {
 		sess = nil
 		err = errors.New("Expired")
 		sessionStoreLock.Lock()
-		delete(sessionStore[sessionId])
+		delete(sessionStore, sessionId)
 		sessionStoreLock.Unlock()
 	} else {
-		sess.expires = time.Now().Add(4*time.Hour)
+		locSess.expires = time.Now().Add(4 * time.Hour)
+		locSess = sess
 	}
 	return
 }
 
-func New()(sess Session) {
+func New() (sess Session) {
 	bytes := make([]byte, 21)
 	_, err := rand.Read(bytes)
 	if err != nil {
@@ -78,7 +88,7 @@ func New()(sess Session) {
 	sessId := base64.StdEncoding.EncodeToString(bytes)
 	newSess := &session{}
 	newSess.sessionId = sessId
-	newSess.expires = time.Now().Add(4*time.Hour)
+	newSess.expires = time.Now().Add(4 * time.Hour)
 	sessionStoreLock.Lock()
 	sessionStore[sessId] = newSess
 	sessionStoreLock.Unlock()
@@ -86,7 +96,7 @@ func New()(sess Session) {
 }
 
 func Destroy(sessionId string) {
-		sessionStoreLock.Lock()
-		delete(sessionStore[sessionId])
-		sessionStoreLock.Unlock()
+	sessionStoreLock.Lock()
+	delete(sessionStore, sessionId)
+	sessionStoreLock.Unlock()
 }

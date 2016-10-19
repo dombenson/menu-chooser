@@ -25,7 +25,7 @@ type attendee struct {
 	eventid int
 }
 
-const GetAttendeeSQL = "SELECT `attendeeid`,`name`,`email`,`key`,`eventid` FROM `attendees` WHERE `id` = ?"
+const GetAttendeeSQL = "SELECT `attendeeid`,`name`,`email`,`loginkey`,`eventid` FROM `attendees` WHERE `attendeeid` = ?"
 const GetAttendeesByEventSQL = "SELECT `attendeeid` FROM `attendees` WHERE `eventid` = ?"
 
 func MakeAttendee(rows *sql.Rows) (user Attendee, err error) {

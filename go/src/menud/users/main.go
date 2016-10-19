@@ -21,9 +21,9 @@ type user struct {
 const GetUserSQL = "SELECT `userid`,`name`,`email`,`pass` FROM `users` WHERE `userid` = ?"
 const GetUserByEmailSQL = "SELECT `userid`,`name`,`email`,`pass` FROM `users` WHERE `email` = ?"
 
-func MakeUser(rows *sql.Rows) (user User, err error) {
+func MakeUser(rows *sql.Rows) (newUser User, err error) {
 	retUser := &user{}
-	user = retUser
+	newUser = retUser
 	err = rows.Scan(&retUser.id, &retUser.name, &retUser.email, &retUser.pass)
 	return
 }
@@ -35,5 +35,5 @@ func (this *user) Email() string {
 	return this.email
 }
 func (this *user) VerifyPassword(pass string) error {
-	return bcrypt.CompareHashAndPassword(this.pass, []byte(pass))
+	return bcrypt.CompareHashAndPassword([]byte(this.pass), []byte(pass))
 }
