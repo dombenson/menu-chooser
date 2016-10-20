@@ -15,6 +15,7 @@ type Connection interface {
 	GetAttendees(eventId int) (attendees []attendees.Attendee, err error)
 	GetAttendeeByKey(token string) (attendee attendees.Attendee, err error)
 	GetCourses(eventId int) (crses []courses.Course, err error)
+	GetCourse(courseId int) (crs courses.Course, err error)
 	GetOptions(courseId int) (opts []options.Option, err error)
 	GetEvent(id int) (_ events.Event, err error)
 	GetEventsForUser(userId int) (events []events.Event, err error)
@@ -67,6 +68,15 @@ type getCoursesResponse struct {
 	err   error
 }
 
+type getCourseRequest struct {
+	courseId int
+	retChan  chan getCourseResponse
+}
+type getCourseResponse struct {
+	crs courses.Course
+	err error
+}
+
 type getCoursesRequest struct {
 	eventId int
 	retChan chan getCoursesResponse
@@ -111,4 +121,10 @@ type getSelectionRequest struct {
 	attendeeId int
 	courseId   int
 	retChan    chan getSelectionResponse
+}
+type setSelectionRequest struct {
+	attendeeId  int
+	courseId    int
+	selectionId int
+	retChan     chan getSelectionResponse
 }

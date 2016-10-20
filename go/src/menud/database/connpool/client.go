@@ -49,6 +49,14 @@ func GetAttendeeByKey(token string) (attendees.Attendee, error) {
 	res := <-req.retChan
 	return res.attendee, res.err
 }
+func GetCourse(courseId int) (courses.Course, error) {
+	req := getCourseRequest{}
+	req.retChan = make(chan (getCourseResponse))
+	req.courseId = courseId
+	getCourseChan <- req
+	res := <-req.retChan
+	return res.crs, res.err
+}
 func GetCourses(eventId int) ([]courses.Course, error) {
 	req := getCoursesRequest{}
 	req.retChan = make(chan (getCoursesResponse))
@@ -87,6 +95,17 @@ func GetSelection(attendeeId, courseId int) (int, error) {
 	req.attendeeId = attendeeId
 	req.courseId = courseId
 	getSelectionChan <- req
+	res := <-req.retChan
+	return res.optionId, res.err
+}
+
+func SetSelection(attendeeId, courseId, selectionId int) (int, error) {
+	req := setSelectionRequest{}
+	req.retChan = make(chan (getSelectionResponse))
+	req.attendeeId = attendeeId
+	req.courseId = courseId
+	req.selectionId = selectionId
+	setSelectionChan <- req
 	res := <-req.retChan
 	return res.optionId, res.err
 }

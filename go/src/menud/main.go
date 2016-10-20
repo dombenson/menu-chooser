@@ -3,12 +3,12 @@ package main
 import (
 	"goji.io"
 	"goji.io/pat"
-	"menud/routers/attendeeRouter"
-	"menud/helpers/auth"
 	"menud/config"
 	"menud/database/connpool"
-	"net/http"
+	"menud/helpers/auth"
 	"menud/routers/adminRouter"
+	"menud/routers/attendeeRouter"
+	"net/http"
 )
 
 func main() {
@@ -29,4 +29,5 @@ func main() {
 
 	http.ListenAndServe(config.BindString(), topRouter)
 
+	connpool.Stop()
 }

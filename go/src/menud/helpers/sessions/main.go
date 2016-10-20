@@ -66,7 +66,7 @@ func Get(sessionId string) (sess Session, err error) {
 		err = errors.New("Not found")
 		return
 	}
-	if locSess.expires.After(time.Now()) {
+	if locSess.expires.Before(time.Now()) {
 		sess = nil
 		err = errors.New("Expired")
 		sessionStoreLock.Lock()

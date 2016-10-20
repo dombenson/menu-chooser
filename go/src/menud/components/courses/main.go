@@ -8,6 +8,7 @@ import (
 type Course interface {
 	Name() string
 	ID() int
+	EventId() int
 	json.Marshaler
 }
 
@@ -19,6 +20,7 @@ type course struct {
 }
 
 const GetCoursesSQL = "SELECT `courseid`,`eventid`,`name`,`order` FROM `courses` WHERE `eventid` = ? ORDER BY `order`,`courseid` ASC"
+const GetCourseSQL = "SELECT `courseid`,`eventid`,`name`,`order` FROM `courses` WHERE `courseid` = ?"
 
 func MakeCourse(rows *sql.Rows) (newCourse Course, err error) {
 	retCourse := &course{}
@@ -32,6 +34,9 @@ func (this *course) Name() string {
 }
 func (this *course) ID() int {
 	return this.id
+}
+func (this *course) EventId() int {
+	return this.eventid
 }
 
 func (this *course) MarshalJSON() ([]byte, error) {

@@ -14,10 +14,11 @@ type Option interface {
 }
 
 type option struct {
-	id          int
-	name        string
-	courseid    int
-	description string
+	id             int
+	name           string
+	courseid       int
+	description    string
+	descriptionSet bool
 }
 
 const GetOptionsSQL = "SELECT `optionid`,`courseid`,`name`,`description` FROM `options` WHERE `courseid` = ? ORDER BY name ASC"
@@ -25,7 +26,15 @@ const GetOptionsSQL = "SELECT `optionid`,`courseid`,`name`,`description` FROM `o
 func MakeOption(rows *sql.Rows) (newOption Option, err error) {
 	retOption := &option{}
 	newOption = retOption
-	err = rows.Scan(&retOption.id, &retOption.courseid, &retOption.name, &retOption.description)
+	var tmpDesc *string
+	err = rows.Scan(&retOption.id, &retOption.courseid, &retOption.name, &tmpDesc)
+	if tmpDesc != nil {
+		retOption.descriptionSet = true
+		retOption.description = *tmpDesc
+	} else {
+		retOption.descriptionSet = false
+		retOption.description = ""
+	}
 	return
 }
 

@@ -43,10 +43,10 @@ func ParseToken(token string) (id int, authToken string) {
 	byteArr := []byte(token)
 	lenChar := byteArr[:1]
 	intLen, err := strconv.Atoi(string(lenChar))
-	if (err != nil) || (intLen < 1) || (intLen > 7) || (len(token) < (intLen + 1 + 12)) {
+	if (err != nil) || (intLen < 1) || (intLen > 7) || (len(token) < (intLen + 1 + 8)) {
 		return
 	}
-	idChars := byteArr[1:intLen]
+	idChars := byteArr[1 : intLen+1]
 	tmpId, err := strconv.Atoi(string(idChars))
 	if (err != nil) || tmpId < 1 || tmpId > 9999999 {
 		return

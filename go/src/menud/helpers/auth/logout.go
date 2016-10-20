@@ -1,12 +1,12 @@
 package auth
 
 import (
-	"net/http"
+	"golang.org/x/net/context"
+	"menud/config"
+	"menud/helpers/cookies"
 	"menud/helpers/response"
 	"menud/helpers/sessions"
-	"menud/helpers/cookies"
-	"menud/config"
-	"golang.org/x/net/context"
+	"net/http"
 	"time"
 )
 
@@ -17,7 +17,7 @@ func Logout(_ context.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	clearCookie := cookies.Make("")
-	clearCookie.Expires = time.Now().Add(-1*time.Hour);
+	clearCookie.Expires = time.Now().Add(-1 * time.Hour)
 	http.SetCookie(w, clearCookie)
 
 	sessions.Destroy(cookie.Value)

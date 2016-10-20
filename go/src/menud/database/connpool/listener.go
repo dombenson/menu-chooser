@@ -1,6 +1,7 @@
 package connpool
 
 import (
+	"fmt"
 	"menud/database/db"
 )
 
@@ -31,10 +32,14 @@ func (this *pooledConnection) listen() {
 			this.handleGetAttendees(req)
 		case req := <-getCoursesChan:
 			this.handleGetCourses(req)
+		case req := <-getCourseChan:
+			this.handleGetCourse(req)
 		case req := <-getOptionsChan:
 			this.handleGetOptions(req)
 		case req := <-getSelectionChan:
 			this.handleGetSelection(req)
+		case req := <-setSelectionChan:
+			this.handleSetSelection(req)
 		case req := <-shutDownChan:
 			shutDownChan <- req
 			break
@@ -65,11 +70,17 @@ func (this *pooledConnection) handleGetAttendees(req getAttendeesRequest) {
 func (this *pooledConnection) handleGetAttendeeByKey(req getAttendeeByKeyRequest) {
 	var res getAttendeeResponse
 	res.attendee, res.err = this.dbConn.GetAttendeeByKey(req.token)
+	fmt.Println(res.err)
 	req.retChan <- res
 }
 func (this *pooledConnection) handleGetCourses(req getCoursesRequest) {
 	var res getCoursesResponse
 	res.crses, res.err = this.dbConn.GetCourses(req.eventId)
+	req.retChan <- res
+}
+func (this *pooledConnection) handleGetCourse(req getCourseRequest) {
+	var res getCourseResponse
+	res.crs, res.err = this.dbConn.GetCourse(req.courseId)
 	req.retChan <- res
 }
 func (this *pooledConnection) handleGetOptions(req getOptionsRequest) {
@@ -91,5 +102,11 @@ func (this *pooledConnection) handleGetEventsForUser(req getEventsRequest) {
 func (this *pooledConnection) handleGetSelection(req getSelectionRequest) {
 	var res getSelectionResponse
 	res.optionId, res.err = this.dbConn.GetSelection(req.attendeeId, req.courseId)
+	req.retChan <- res
+}
+
+func (this *pooledConnection) handleSetSelection(req setSelectionRequest) {
+	var res getSelectionResponse
+	res.optionId, res.err = this.dbConn.SetSelection(req.attendeeId, req.courseId, req.selectionId)
 	req.retChan <- res
 }
