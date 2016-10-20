@@ -1,10 +1,14 @@
 package courses
 
-import "database/sql"
+import (
+	"database/sql"
+	"encoding/json"
+)
 
 type Course interface {
 	Name() string
 	ID() int
+	json.Marshaler
 }
 
 type course struct {
@@ -28,4 +32,16 @@ func (this *course) Name() string {
 }
 func (this *course) ID() int {
 	return this.id
+}
+
+func (this *course) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&struct {
+		ID       int    `json:"id"`
+		Name     string `json:"name"`
+		EventID  int    `json:"eventId"`
+	}{
+		ID:       this.id,
+		Name:     this.name,
+		EventID:  this.eventid,
+	})
 }

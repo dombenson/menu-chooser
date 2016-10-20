@@ -3,6 +3,7 @@ package events
 import (
 	"database/sql"
 	"time"
+	"encoding/json"
 )
 
 type Event interface {
@@ -11,6 +12,7 @@ type Event interface {
 	ID() int
 	UserID() int
 	Date() time.Time
+	json.Marshaler
 }
 
 type event struct {
@@ -45,4 +47,18 @@ func (this *event) UserID() int {
 }
 func (this *event) Date() time.Time {
 	return this.date
+}
+
+func (this *event) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&struct {
+		ID       int    `json:"id"`
+		Name     string `json:"name"`
+		Location string `json:"location"`
+		Date     string `json:"date"`
+	}{
+		ID:       this.id,
+		Name:     this.name,
+		Location: this.location,
+		Date:     this.date.Format(time.RFC3339),
+	})
 }

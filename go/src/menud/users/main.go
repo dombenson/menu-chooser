@@ -3,12 +3,14 @@ package users
 import (
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
+	"encoding/json"
 )
 
 type User interface {
 	Name() string
 	Email() string
 	VerifyPassword(string) error
+	json.Marshaler
 }
 
 type user struct {
@@ -36,4 +38,16 @@ func (this *user) Email() string {
 }
 func (this *user) VerifyPassword(pass string) error {
 	return bcrypt.CompareHashAndPassword([]byte(this.pass), []byte(pass))
+}
+
+func (this *user) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&struct {
+		ID       int    `json:"id"`
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+	}{
+		ID:       this.id,
+		Name:     this.name,
+		Email:    this.email,
+	})
 }

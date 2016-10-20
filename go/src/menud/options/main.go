@@ -1,12 +1,16 @@
 package options
 
-import "database/sql"
+import (
+	"database/sql"
+	"encoding/json"
+)
 
 type Option interface {
 	Name() string
 	Description() string
 	ID() int
 	CourseID() int
+	json.Marshaler
 }
 
 type option struct {
@@ -36,4 +40,18 @@ func (this *option) ID() int {
 }
 func (this *option) CourseID() int {
 	return this.courseid
+}
+
+func (this *option) MarshalJSON() ([]byte, error) {
+	return json.Marshal(&struct {
+		ID          int    `json:"id"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		CourseID    int    `json:"courseId"`
+	}{
+		ID:          this.id,
+		Name:        this.name,
+		Description: this.description,
+		CourseID:    this.courseid,
+	})
 }
