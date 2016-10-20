@@ -7,6 +7,7 @@ import (
 )
 
 type User interface {
+	ID() int
 	Name() string
 	Email() string
 	VerifyPassword(string) error
@@ -30,6 +31,9 @@ func MakeUser(rows *sql.Rows) (newUser User, err error) {
 	return
 }
 
+func (this *user) ID() int {
+	return this.id
+}
 func (this *user) Name() string {
 	return this.name
 }

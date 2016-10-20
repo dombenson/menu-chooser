@@ -2,12 +2,13 @@ package main
 
 import (
 	"menud/connpool"
-	"fmt"
 	"goji.io"
 	"goji.io/pat"
 	"net/http"
 	"menud/config"
 	"menud/auth"
+	"menud/attendeeRouter"
+	"menud/adminRouter"
 )
 
 func main() {
@@ -17,15 +18,15 @@ func main() {
 
 	topRouter := goji.NewMux()
 
-	adminRouter := goji.SubMux()
+	admRouter := adminRouter.Get()
 
-	attendeeRouter := goji.SubMux()
+	attRouter := attendeeRouter.Get()
 
 	topRouter.HandleFuncC(pat.Get("/login/:token"), auth.LoginAttendee)
 	topRouter.HandleFuncC(pat.Post("/adminlogin/"), auth.LoginUser)
 
-	topRouter.HandleC(pat.New("/admin/*"), adminRouter)
-	topRouter.HandleC(pat.New("/user/*"), attendeeRouter)
+	topRouter.HandleC(pat.New("/admin/*"), admRouter)
+	topRouter.HandleC(pat.New("/user/*"), attRouter)
 
 	http.ListenAndServe(config.BindString(), topRouter)
 

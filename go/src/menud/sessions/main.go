@@ -37,13 +37,13 @@ func (this *session) GetUserId() int {
 	return this.userId
 }
 func (this *session) GetSessionId() string {
-	return this.eventId
+	return this.sessionId
 }
 func (this *session) GetAttendeeId() int {
 	return this.attendeeId
 }
 func (this *session) GetEventId() int {
-	return this.sessionId
+	return this.eventId
 }
 
 func (this *session) SetUserId(id int) {
@@ -74,7 +74,7 @@ func Get(sessionId string) (sess Session, err error) {
 		sessionStoreLock.Unlock()
 	} else {
 		locSess.expires = time.Now().Add(4 * time.Hour)
-		locSess = sess
+		sess = locSess
 	}
 	return
 }
