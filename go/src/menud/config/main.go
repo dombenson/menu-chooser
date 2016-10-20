@@ -69,7 +69,6 @@ func ConnectionPoolSize() int {
 	return getIntWithDefault(poolSection, poolSize, 4)
 }
 
-
 func BindString() string {
 	return fmt.Sprintf("%s:%d", getWithDefault(bindSection, bindAddr, "127.0.0.1"), getIntWithDefault(bindSection, bindAddr, 8000))
 }

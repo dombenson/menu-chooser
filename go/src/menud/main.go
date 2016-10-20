@@ -1,20 +1,18 @@
 package main
 
 import (
-	"menud/connpool"
 	"goji.io"
 	"goji.io/pat"
-	"net/http"
+	"menud/routers/attendeeRouter"
+	"menud/helpers/auth"
 	"menud/config"
-	"menud/auth"
-	"menud/attendeeRouter"
-	"menud/adminRouter"
+	"menud/database/connpool"
+	"net/http"
+	"menud/routers/adminRouter"
 )
 
 func main() {
-	// Force the connection pool to start up so that statements are prepared and we can bail out immediately if
-	// there is a problem with them (rather than panic-ing on a user call)
-	connpool.GetUser(1)
+	connpool.Start()
 
 	topRouter := goji.NewMux()
 
@@ -24,6 +22,7 @@ func main() {
 
 	topRouter.HandleFuncC(pat.Get("/login/:token"), auth.LoginAttendee)
 	topRouter.HandleFuncC(pat.Post("/adminlogin/"), auth.LoginUser)
+	topRouter.HandleFuncC(pat.Get("/logout"), auth.Logout)
 
 	topRouter.HandleC(pat.New("/admin/*"), admRouter)
 	topRouter.HandleC(pat.New("/user/*"), attRouter)
