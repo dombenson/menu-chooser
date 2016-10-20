@@ -11,10 +11,10 @@ func writeJSON(output Response, w http.ResponseWriter) {
 		http.Error(w, "Internal Error", 500)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	if output.httpCode > 0 {
-		http.Error(w, "", output.httpCode)
+		w.WriteHeader(output.httpCode)
 	}
-	w.Header().Add("Content-Type", "application/json")
 
 	w.Write(marshalledJson)
 	return

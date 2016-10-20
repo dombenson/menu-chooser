@@ -2,35 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="369e08a2-163d-4a26-b677-9225aae452ac" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/go/src/menud/helpers/auth/logout.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/adminRouter/main.go" afterPath="$PROJECT_DIR$/go/src/menud/routers/adminRouter/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/adminRouter/middleware.go" afterPath="$PROJECT_DIR$/go/src/menud/routers/adminRouter/middleware.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/attendeeRouter/main.go" afterPath="$PROJECT_DIR$/go/src/menud/routers/attendeeRouter/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/attendeeRouter/middleware.go" afterPath="$PROJECT_DIR$/go/src/menud/routers/attendeeRouter/middleware.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/attendees/main.go" afterPath="$PROJECT_DIR$/go/src/menud/components/attendees/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/auth/adminlogin.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/auth/adminlogin.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/auth/userlogin.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/auth/userlogin.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/connpool/channels.go" afterPath="$PROJECT_DIR$/go/src/menud/database/connpool/channels.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/connpool/client.go" afterPath="$PROJECT_DIR$/go/src/menud/database/connpool/client.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/connpool/listener.go" afterPath="$PROJECT_DIR$/go/src/menud/database/connpool/listener.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/connpool/main.go" afterPath="$PROJECT_DIR$/go/src/menud/database/connpool/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/connpool/types.go" afterPath="$PROJECT_DIR$/go/src/menud/database/connpool/types.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/cookies/cookies.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/cookies/cookies.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/courses/main.go" afterPath="$PROJECT_DIR$/go/src/menud/components/courses/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/db/main.go" afterPath="$PROJECT_DIR$/go/src/menud/database/db/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/events/main.go" afterPath="$PROJECT_DIR$/go/src/menud/components/events/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/options/main.go" afterPath="$PROJECT_DIR$/go/src/menud/components/options/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/response/common.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/response/common.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/response/error.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/response/error.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/response/success.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/response/success.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/response/types.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/response/types.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/sessions/main.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/sessions/main.go" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/go/src/menud/users/main.go" afterPath="$PROJECT_DIR$/go/src/menud/components/users/main.go" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/go/src/github.com/dombenson/go-ini" afterPath="$PROJECT_DIR$/go/src/github.com/dombenson/go-ini" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/go/src/golang.org/x/crypto" afterPath="$PROJECT_DIR$/go/src/golang.org/x/crypto" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/go/src/menud/config/main.go" afterPath="$PROJECT_DIR$/go/src/menud/config/main.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/go/src/menud/main.go" afterPath="$PROJECT_DIR$/go/src/menud/main.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/go/src/menud/helpers/response/common.go" afterPath="$PROJECT_DIR$/go/src/menud/helpers/response/common.go" />
     </list>
     <ignored path="menu-chooser.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -64,7 +38,74 @@
     <favorites_list name="menu-chooser" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="600" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="600">
+      <file leaf-file-name="main.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/go/src/menud/main.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="812">
+              <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+              <folding>
+                <element signature="e#14#188#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="logout.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/auth/logout.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="696">
+              <caret line="24" column="20" selection-start-line="24" selection-start-column="17" selection-end-line="24" selection-end-column="21" />
+              <folding>
+                <element signature="e#14#165#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="success.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/response/success.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="261">
+              <caret line="9" column="14" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="17" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="common.go" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/response/common.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="406">
+              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+              <folding>
+                <element signature="e#18#57#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server.go" pinned="false" current-in-tab="false">
+        <entry file="file:///usr/lib/go-1.7/src/net/http/server.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="645">
+              <caret line="1737" column="21" selection-start-line="1737" selection-start-column="10" selection-end-line="1737" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="header.go" pinned="false" current-in-tab="false">
+        <entry file="file:///usr/lib/go-1.7/src/net/http/header.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="435">
+              <caret line="22" column="16" selection-start-line="22" selection-start-column="16" selection-end-line="22" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -119,6 +160,7 @@
         <option value="$PROJECT_DIR$/go/src/menud/components/users/main.go" />
         <option value="$PROJECT_DIR$/go/src/menud/main.go" />
         <option value="$PROJECT_DIR$/go/src/menud/helpers/auth/logout.go" />
+        <option value="$PROJECT_DIR$/go/src/menud/helpers/response/common.go" />
       </list>
     </option>
   </component>
@@ -579,16 +621,16 @@
       <workItem from="1476861768088" duration="8034000" />
       <workItem from="1476948158392" duration="6871000" />
       <workItem from="1476961789680" duration="4346000" />
-      <workItem from="1476979846874" duration="1639000" />
+      <workItem from="1476979846874" duration="2646000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35652000" />
+    <option name="totallyTimeSpent" value="36659000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="3954" y="42" width="3726" height="2118" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15432099" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -626,23 +668,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/go/src/menud/components/attendees/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="580">
-          <caret line="28" column="88" selection-start-line="28" selection-start-column="88" selection-end-line="28" selection-end-column="88" />
-          <folding>
-            <element signature="e#19#141#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/go-1.7/src/hash/hash.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="17" column="8" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/lib/go-1.7/src/database/sql/sql.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="48227">
@@ -810,6 +835,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1566">
           <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -903,14 +929,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/response/common.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="116">
-          <caret line="4" column="18" selection-start-line="4" selection-start-column="18" selection-end-line="4" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/response/error.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -918,14 +936,6 @@
           <folding>
             <element signature="e#18#40#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/response/success.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -958,7 +968,7 @@
         <state relative-caret-position="261">
           <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
           <folding>
-            <element signature="e#24#40#0" expanded="true" />
+            <element signature="e#24#40#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -967,9 +977,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="319">
           <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-          <folding>
-            <element signature="e#24#180#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -978,7 +986,7 @@
         <state relative-caret-position="928">
           <caret line="32" column="14" selection-start-line="32" selection-start-column="14" selection-end-line="32" selection-end-column="14" />
           <folding>
-            <element signature="e#18#39#0" expanded="true" />
+            <element signature="e#18#39#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1005,9 +1013,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="348">
           <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding>
-            <element signature="e#14#183#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1016,27 +1022,61 @@
         <state relative-caret-position="1247">
           <caret line="43" column="9" selection-start-line="29" selection-start-column="8" selection-end-line="43" selection-end-column="9" />
           <folding>
-            <element signature="e#21#177#0" expanded="true" />
+            <element signature="e#21#177#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/auth/logout.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="754">
-          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+        <state relative-caret-position="696">
+          <caret line="24" column="20" selection-start-line="24" selection-start-column="17" selection-end-line="24" selection-end-column="21" />
           <folding>
             <element signature="e#14#165#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/response/success.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="9" column="14" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/go/src/menud/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="667">
-          <caret line="23" column="64" selection-start-line="23" selection-start-column="61" selection-end-line="23" selection-end-column="70" />
+        <state relative-caret-position="812">
+          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
           <folding>
             <element signature="e#14#188#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/go-1.7/src/net/http/header.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="22" column="16" selection-start-line="22" selection-start-column="16" selection-end-line="22" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/go-1.7/src/net/http/server.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="645">
+          <caret line="1737" column="21" selection-start-line="1737" selection-start-column="10" selection-end-line="1737" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go/src/menud/helpers/response/common.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="406">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding>
+            <element signature="e#18#57#0" expanded="true" />
           </folding>
         </state>
       </provider>
