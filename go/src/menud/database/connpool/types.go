@@ -8,20 +8,6 @@ import (
 	"menud/components/users"
 )
 
-type Connection interface {
-	GetUser(int) (users.User, error)
-	GetUserByEmailPassword(email, password string) (users.User, error)
-	GetAttendee(id int) (_ attendees.Attendee, err error)
-	GetAttendees(eventId int) (attendees []attendees.Attendee, err error)
-	GetAttendeeByKey(token string) (attendee attendees.Attendee, err error)
-	GetCourses(eventId int) (crses []courses.Course, err error)
-	GetCourse(courseId int) (crs courses.Course, err error)
-	GetOptions(courseId int) (opts []options.Option, err error)
-	GetEvent(id int) (_ events.Event, err error)
-	GetEventsForUser(userId int) (events []events.Event, err error)
-	GetSelection(attendeeId, courseId int) (optionId int, err error)
-}
-
 type getUserResponse struct {
 	user users.User
 	err  error
@@ -90,6 +76,16 @@ type getOptionsResponse struct {
 type getOptionsRequest struct {
 	courseId int
 	retChan  chan getOptionsResponse
+}
+
+type getOptionResponse struct {
+	opt options.Option
+	err error
+}
+
+type getOptionRequest struct {
+	optionId int
+	retChan  chan getOptionResponse
 }
 
 type getEventResponse struct {

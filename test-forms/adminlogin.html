@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test admin section login</title>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+<script>
+    function postForm (form) {
+        var arrData = $(form).serializeArray()
+        var data = {}
+        $.each(arrData, function() {
+            data[this.name] = this.value;
+        });
+        console.log(data)
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: 'http://localhost:8000/adminlogin',
+            data: JSON.stringify(data),  // serialized data to send on server
+            dataType:'json', // set recieving type - JSON in case of a question
+            xhrFields: {
+                withCredentials: true
+            },
+            type:'POST', // set sending HTTP Request type
+            async:false,
+            success: function(data) {
+              alert(JSON.stringify(data))
+
+            },
+            error: function(data) { // if error occured
+                alert(JSON.stringify(data))
+
+            }
+        });
+        return false;
+    }
+</script>
+<form method="POST" onsubmit="return postForm(this)">
+    <table>
+        <tr><td>Email</td>
+            <td><input type="text" name="email"></td></tr>
+
+        <tr><td>Password</td>
+            <td><input type="password" name="password"></td></tr>
+
+        <tr><td colspan="2"><input type="submit" value="Login"/> </td></tr>
+
+    </table>
+</form>
+</body>
+</html>
+
+

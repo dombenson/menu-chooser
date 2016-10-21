@@ -1,7 +1,6 @@
 package connpool
 
 import (
-	"fmt"
 	"menud/database/db"
 )
 
@@ -36,6 +35,8 @@ func (this *pooledConnection) listen() {
 			this.handleGetCourse(req)
 		case req := <-getOptionsChan:
 			this.handleGetOptions(req)
+		case req := <-getOptionChan:
+			this.handleGetOption(req)
 		case req := <-getSelectionChan:
 			this.handleGetSelection(req)
 		case req := <-setSelectionChan:
@@ -70,7 +71,6 @@ func (this *pooledConnection) handleGetAttendees(req getAttendeesRequest) {
 func (this *pooledConnection) handleGetAttendeeByKey(req getAttendeeByKeyRequest) {
 	var res getAttendeeResponse
 	res.attendee, res.err = this.dbConn.GetAttendeeByKey(req.token)
-	fmt.Println(res.err)
 	req.retChan <- res
 }
 func (this *pooledConnection) handleGetCourses(req getCoursesRequest) {
@@ -86,6 +86,11 @@ func (this *pooledConnection) handleGetCourse(req getCourseRequest) {
 func (this *pooledConnection) handleGetOptions(req getOptionsRequest) {
 	var res getOptionsResponse
 	res.opts, res.err = this.dbConn.GetOptions(req.courseId)
+	req.retChan <- res
+}
+func (this *pooledConnection) handleGetOption(req getOptionRequest) {
+	var res getOptionResponse
+	res.opt, res.err = this.dbConn.GetOption(req.optionId)
 	req.retChan <- res
 }
 func (this *pooledConnection) handleGetEvent(req getEventRequest) {

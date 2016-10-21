@@ -20,6 +20,7 @@ type Connection interface {
 	GetAttendeeByKey(token string) (attendee attendees.Attendee, err error)
 	GetCourses(eventId int) (crses []courses.Course, err error)
 	GetCourse(courseId int) (crs courses.Course, err error)
+	GetOption(optionID int) (opt options.Option, err error)
 	GetOptions(courseId int) (opts []options.Option, err error)
 	GetEvent(id int) (_ events.Event, err error)
 	GetEventsForUser(userId int) (events []events.Event, err error)
@@ -37,6 +38,7 @@ type connection struct {
 	getEventStmt          *sql.Stmt
 	getCoursesStmt        *sql.Stmt
 	getCourseStmt         *sql.Stmt
+	getOptionStmt         *sql.Stmt
 	getOptionsStmt        *sql.Stmt
 	getSelectionStmt      *sql.Stmt
 	setSelectionStmt      *sql.Stmt
@@ -86,9 +88,13 @@ func (this *connection) connect() {
 	if err != nil {
 		panic("Unable to prepare get course statement: " + err.Error())
 	}
+	this.getOptionStmt, err = this.baseConn.Prepare(options.GetOptionSQL)
+	if err != nil {
+		panic("Unable to prepare get option statement: " + err.Error())
+	}
 	this.getOptionsStmt, err = this.baseConn.Prepare(options.GetOptionsSQL)
 	if err != nil {
-		panic("Unable to prepare get options statement: " + err.Error())
+		panic("Unable to prepare get options for course statement: " + err.Error())
 	}
 	this.getSelectionStmt, err = this.baseConn.Prepare("SELECT `optionid` FROM `selections` WHERE `courseid` = ? AND `attendeeid` = ?")
 	if err != nil {
@@ -118,6 +124,11 @@ func (this *connection) GetUserByEmailPassword(email, password string) (user use
 	var rows *sql.Rows
 	rows, err = this.getUserEmailStmt.Query(email)
 	if err != nil {
+		return
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		err = errors.New("User not found")
 		return
 	}
 	user, err = users.MakeUser(rows)
@@ -241,6 +252,21 @@ func (this *connection) GetOptions(courseId int) (opts []options.Option, err err
 	return
 }
 
+func (this *connection) GetOption(id int) (_ options.Option, err error) {
+	var rows *sql.Rows
+	rows, err = this.getOptionStmt.Query(id)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		err = errors.New("Event not found")
+		return
+	}
+
+	return options.MakeOption(rows)
+}
+
 func (this *connection) GetEvent(id int) (_ events.Event, err error) {
 	var rows *sql.Rows
 	rows, err = this.getEventStmt.Query(id)
@@ -259,7 +285,7 @@ func (this *connection) GetEvent(id int) (_ events.Event, err error) {
 func (this *connection) GetEventsForUser(userId int) (ents []events.Event, err error) {
 	var rows *sql.Rows
 	ents = make([]events.Event, 0, 5)
-	rows, err = this.getOptionsStmt.Query(userId)
+	rows, err = this.getUserEventsStmt.Query(userId)
 	if err != nil {
 		return
 	}

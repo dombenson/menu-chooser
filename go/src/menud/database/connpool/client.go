@@ -73,6 +73,14 @@ func GetOptions(courseId int) ([]options.Option, error) {
 	res := <-req.retChan
 	return res.opts, res.err
 }
+func GetOption(optionId int) (options.Option, error) {
+	req := getOptionRequest{}
+	req.retChan = make(chan (getOptionResponse))
+	req.optionId = optionId
+	getOptionChan <- req
+	res := <-req.retChan
+	return res.opt, res.err
+}
 func GetEvent(id int) (events.Event, error) {
 	req := getEventRequest{}
 	req.retChan = make(chan (getEventResponse))

@@ -18,7 +18,7 @@ type loginCreds struct {
 func LoginUser(_ context.Context, w http.ResponseWriter, r *http.Request) {
 	creds := loginCreds{}
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(creds)
+	err := decoder.Decode(&creds)
 	if err != nil {
 		response.BadInput(w)
 		return
@@ -26,6 +26,7 @@ func LoginUser(_ context.Context, w http.ResponseWriter, r *http.Request) {
 	user, err := connpool.GetUserByEmailPassword(creds.Email, creds.Password)
 	if err != nil {
 		response.BadLogin(w)
+		return
 	}
 	sess := sessions.New()
 	sess.SetUserId(user.ID())

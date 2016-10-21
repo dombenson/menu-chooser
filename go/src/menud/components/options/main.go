@@ -22,6 +22,7 @@ type option struct {
 }
 
 const GetOptionsSQL = "SELECT `optionid`,`courseid`,`name`,`description` FROM `options` WHERE `courseid` = ? ORDER BY name ASC"
+const GetOptionSQL = "SELECT `optionid`,`courseid`,`name`,`description` FROM `options` WHERE `optionid` = ?"
 
 func MakeOption(rows *sql.Rows) (newOption Option, err error) {
 	retOption := &option{}

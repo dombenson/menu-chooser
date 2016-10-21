@@ -27,6 +27,10 @@ const prefixPath = "path"
 const cookieName = "cookie"
 const secure = "secure"
 
+const testSection = "test"
+const testHost = "host"
+const testEnabled = "enabled"
+
 var iniFile ini.Getter
 
 func init() {
@@ -87,4 +91,12 @@ func PathPrefix() string {
 
 func UseHTTPS() bool {
 	return getBoolWithDefault(httpSection, secure, false)
+}
+
+func CorsEnabled() bool {
+	return getBoolWithDefault(testSection, testEnabled, false)
+}
+
+func CorsOrigin() string {
+	return getWithDefault(testSection, testHost, "")
 }

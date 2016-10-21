@@ -10,6 +10,7 @@ func init() {
 	getAttendeesChan = make(chan (getAttendeesRequest))
 	getCourseChan = make(chan (getCourseRequest))
 	getCoursesChan = make(chan (getCoursesRequest))
+	getOptionChan = make(chan (getOptionRequest))
 	getOptionsChan = make(chan (getOptionsRequest))
 	getSelectionChan = make(chan (getSelectionRequest))
 	setSelectionChan = make(chan (setSelectionRequest))
