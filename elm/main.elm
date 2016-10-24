@@ -7,8 +7,6 @@ import Task
 import Date
 import Http
 import Json.Decode as Json exposing (Decoder, decodeValue, succeed, string, oneOf, null, list, bool, (:=), andThen)
-import VirtualDom
-
 
 main =
     App.program
