@@ -275,7 +275,7 @@ loadOptions crs =
 
 -- VIEW
 
-drawOption : Option -> VirtualDom.Node a
+drawOption : Option -> Html a
 drawOption opt =
     div [] [
         div [] [ text opt.name ],
@@ -283,7 +283,7 @@ drawOption opt =
     ]
 
 
-drawCourse : Course -> VirtualDom.Node a
+drawCourse : Course -> Html a
 drawCourse crs =
     div [] [
         div [] [ text crs.name ],
