@@ -7,6 +7,7 @@ import (
 
 func Get() *goji.Mux {
 	rtr := goji.SubMux()
+	rtr.HandleFuncC(pat.Get("/me"), getUser)
 	rtr.HandleFuncC(pat.Get("/event"), getEvent)
 	rtr.HandleFuncC(pat.Get("/courses"), getCourses)
 	rtr.HandleFuncC(pat.Get("/options/:course"), getOptions)

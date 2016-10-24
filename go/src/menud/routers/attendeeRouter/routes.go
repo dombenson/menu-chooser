@@ -10,6 +10,10 @@ import (
 	"net/http"
 )
 
+func getUser(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	att := ctx.Value(AttendeeContextKey).(attendees.Attendee)
+	response.Send(w, att)
+}
 func getEvent(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	event := ctx.Value(EventContextKey).(events.Event)
 	response.Send(w, event)
