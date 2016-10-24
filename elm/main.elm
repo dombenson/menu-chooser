@@ -34,12 +34,6 @@ type alias Response data =
     , data: data
     }
 
--- to maintain backward compat (but I'd prob just use 'Response n' where needed):
-type alias AttendeeResponse = Response Attendee
-type alias EventResponse = Response Event
-type alias CoursesResponse = Response (List BaseCourse)
-type alias OptionsResponse = Response (List BaseOption)
-
 {-
 -- an alternate way of writing Response to capture whether an error occurred or not
 -- in the types:
@@ -139,13 +133,13 @@ apiEndpoint = "/api"
 
 type Msg
     = Noop
-    | SetAttendee AttendeeResponse
+    | SetAttendee (Response Attendee)
     | FailAttendee Http.Error
     | FormLoginKey String
     | DoLogin
-    | SetEvent EventResponse
-    | SetCourses CoursesResponse
-    | SetOptions Int OptionsResponse
+    | SetEvent (Response Event)
+    | SetCourses (Response (List BaseCourse))
+    | SetOptions Int (Response (List BaseOption))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -197,17 +191,17 @@ attendeeDecoder =
         ("email" := string)
         ("eventId" := Json.int)
 
-eventDecoder : Json.Decoder EventResponse
+eventDecoder : Json.Decoder Event
 eventDecoder =
     Json.object3 Event
         ("name" := string)
         ("location" := string)
         ("date" := string)
 
-attendeeResponseDecoder : Json.Decoder AttendeeResponse
+attendeeResponseDecoder : Json.Decoder (Response Attendee)
 attendeeResponseDecoder = responseDecoder attendeeDecoder
 
-eventResponseDecoder : Json.Decoder EventResponse
+eventResponseDecoder : Json.Decoder (Response Event)
 eventResponseDecoder = responseDecoder eventDecoder
 
 baseCourseDecoder : Json.Decoder BaseCourse
@@ -216,9 +210,9 @@ baseCourseDecoder =
         ("id" := Json.int)
         ("name" := string)
 
-coursesResponseDecoder : Json.Decoder CoursesResponse
+coursesResponseDecoder : Json.Decoder (Response (List BaseCourse))
 coursesResponseDecoder =
-    Json.object3 CoursesResponse
+    Json.object3 Response
         ("errorCode" := Json.int)
         ("errorMessage" := string)
         ("data" := (Json.list baseCourseDecoder))
@@ -231,9 +225,9 @@ baseOptionDecoder =
         ("name" := string)
         ("description" := string)
 
-optionsResponseDecoder : Json.Decoder OptionsResponse
+optionsResponseDecoder : Json.Decoder (Response (List BaseOption))
 optionsResponseDecoder =
-    Json.object3 OptionsResponse
+    Json.object3 Response
         ("errorCode" := Json.int)
         ("errorMessage" := string)
         ("data" := (Json.list baseOptionDecoder))
@@ -289,7 +283,6 @@ drawCourse crs =
         div [] [ text crs.name ],
         div [] (List.map drawOption crs.options)
     ]
-
 
 view : Model -> Html Msg
 view model =
