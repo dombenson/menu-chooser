@@ -6,7 +6,8 @@ import Random
 import Task
 import Date
 import Http
-import Json.Decode as Json
+import Json.Decode as Json exposing (Decoder, decodeValue, succeed, string, oneOf, null, list, bool, (:=), andThen)
+import VirtualDom
 
 
 main =
@@ -23,16 +24,60 @@ main =
 
 
 type alias Attendee =
-    { name : String
+    { id : Int
+    , name : String
     , email : String
+    , eventId: Int
     }
 
+type alias AttendeeResponse =
+    {
+      errorCode: Int
+    , errorMessage: String
+    , data : Attendee
+    }
+
+type alias EventResponse =
+    {
+      errorCode: Int
+    , errorMessage: String
+    , data : Event
+    }
+
+
+type alias CoursesResponse =
+    {
+      errorCode: Int
+    , errorMessage: String
+    , data : List BaseCourse
+    }
+
+
+type alias OptionsResponse =
+    {
+      errorCode: Int
+    , errorMessage: String
+    , data : List BaseOption
+    }
 
 type alias Event =
     { name : String
     , location : String
     , time : String
     }
+
+
+type alias BaseCourse =
+    { id : Int
+    , name : String
+    }
+
+type alias BaseOption =
+    { id : Int
+    , name : String
+    , description : String
+    }
+
 
 
 type alias Course =
@@ -68,7 +113,7 @@ emptyFormFields = {loginKey = ""}
 
 emptyAttendee : Attendee
 emptyAttendee =
-    { name = "", email = "" }
+    { id = 0, name = "", email = "" , eventId = 0}
 
 
 emptyEvent : Event
@@ -90,7 +135,7 @@ init : ( Model, Cmd Msg )
 init =
     ( model, loadAttendee "" )
 
-apiEndpoint = "http://localhost:8000"
+apiEndpoint = "/api"
 
 
 
@@ -98,7 +143,7 @@ apiEndpoint = "http://localhost:8000"
 
 
 type Msg
-    = Noop | SetAttendee String | FailAttendee Http.Error | FormLoginKey String | DoLogin
+    = Noop | SetAttendee AttendeeResponse | FailAttendee Http.Error | FormLoginKey String | DoLogin | SetEvent EventResponse | SetCourses CoursesResponse | SetOptions Int OptionsResponse
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -106,13 +151,19 @@ update msg model =
     case msg of
         Noop ->
             ( model, Cmd.none )
-        SetAttendee newAttName ->
-            ( {model | loaded = True, loggedIn = True, attendee = {emptyAttendee | name = newAttName}}, Cmd.none)
+        SetAttendee newAtt ->
+            ( {model | loaded = True, loggedIn = True, attendee = newAtt.data}, loadEvent "")
+        SetEvent newEvt ->
+            ( {model | event = newEvt.data}, loadCourses "")
         FailAttendee _ ->
             ( {model | loaded = True, loggedIn = False}, Cmd.none)
         FormLoginKey key ->
             let curForm = model.form
             in ( {model | form = {curForm | loginKey = key}}, Cmd.none)
+        SetCourses crsRes ->
+            ( {model | courses = List.map makeFromBase crsRes.data}, Cmd.none)
+        SetOptions crsId crsRes ->
+            ( model, Cmd.none)
         DoLogin ->
             let useTok = model.form.loginKey
             in ( {model | loaded = False}, loginAttendee useTok )
@@ -122,9 +173,66 @@ runUpdate : msg -> Cmd msg
 runUpdate toExec =
     Task.perform identity identity (Task.succeed toExec)
 
+makeFromBase : BaseCourse -> Course
+makeFromBase bse = { id = bse.id, name = bse.name, options = []}
+
 
 
 -- SUBSCRIPTIONS
+
+
+attendeeResponseDecoder : Json.Decoder AttendeeResponse
+attendeeResponseDecoder =
+    Json.object3 AttendeeResponse
+        ("errorCode" := Json.int)
+        ("errorMessage" := string)
+        ("data" := Json.object4 Attendee
+                           ("id" := Json.int)
+                           ("name" := string)
+                           ("email" := string)
+                           ("eventId" := Json.int)
+                           )
+
+eventResponseDecoder : Json.Decoder EventResponse
+eventResponseDecoder =
+    Json.object3 EventResponse
+        ("errorCode" := Json.int)
+        ("errorMessage" := string)
+        ("data" := Json.object3 Event
+                           ("name" := string)
+                           ("location" := string)
+                           ("date" := string)
+                           )
+
+baseCourseDecoder : Json.Decoder BaseCourse
+baseCourseDecoder =
+    Json.object2 BaseCourse
+        ("id" := Json.int)
+        ("name" := string)
+
+coursesResponseDecoder : Json.Decoder CoursesResponse
+coursesResponseDecoder =
+    Json.object3 CoursesResponse
+        ("errorCode" := Json.int)
+        ("errorMessage" := string)
+        ("data" := (Json.list baseCourseDecoder))
+
+
+baseOptionDecoder : Json.Decoder BaseOption
+baseOptionDecoder =
+    Json.object3 BaseOption
+        ("id" := Json.int)
+        ("name" := string)
+        ("description" := string)
+
+optionsResponseDecoder : Json.Decoder OptionsResponse
+optionsResponseDecoder =
+    Json.object3 OptionsResponse
+        ("errorCode" := Json.int)
+        ("errorMessage" := string)
+        ("data" := (Json.list baseOptionDecoder))
+
+
 
 
 subscriptions : Model -> Sub Msg
@@ -135,19 +243,48 @@ loginAttendee : String -> Cmd Msg
 loginAttendee tok =
     let url = apiEndpoint ++ "/login/" ++ tok
     in
-        Task.perform FailAttendee SetAttendee (Http.get decodeAttendee url)
+        Task.perform FailAttendee SetAttendee (Http.get attendeeResponseDecoder url)
 
 loadAttendee : String -> Cmd Msg
 loadAttendee msg =
     let url = apiEndpoint ++ "/user/me"
     in
-        Task.perform FailAttendee SetAttendee (Http.get decodeAttendee url)
+        Task.perform FailAttendee SetAttendee (Http.get attendeeResponseDecoder url)
 
-decodeAttendee : Json.Decoder String
-decodeAttendee =
-    Json.at ["data", "name"] Json.string
+loadEvent : String -> Cmd Msg
+loadEvent msg =
+    let url = apiEndpoint ++ "/user/event"
+    in
+        Task.perform FailAttendee SetEvent (Http.get eventResponseDecoder url)
+
+loadCourses : String -> Cmd Msg
+loadCourses msg =
+    let url = apiEndpoint ++ "/user/courses"
+    in
+        Task.perform FailAttendee SetCourses (Http.get coursesResponseDecoder url)
+
+loadOptions : Course -> Cmd Msg
+loadOptions crs =
+    let url = apiEndpoint ++ "/user/options/" ++ (toString crs.id)
+    in
+        Task.perform FailAttendee (SetOptions crs.id) (Http.get optionsResponseDecoder url)
 
 -- VIEW
+
+drawOption : Option -> VirtualDom.Node a
+drawOption opt =
+    div [] [
+        div [] [ text (toString opt.name)],
+        div [] [ text (toString opt.description) ]
+    ]
+
+
+drawCourse : Course -> VirtualDom.Node a
+drawCourse crs =
+    div [] [
+        div [] [ text (toString crs.name)],
+        div [] (List.map drawOption crs.options)
+    ]
 
 
 view : Model -> Html Msg
@@ -155,7 +292,10 @@ view model =
     if model.loaded then
         if model.loggedIn then
             div []
-                [ div [] [ text (toString model.attendee.name), text (toString model.attendee.email) ]
+                [
+                 div [] [ text (toString model.attendee.name), text (toString model.attendee.email) ],
+                 div [] [ text (toString model.event.name), text (toString model.event.location) ],
+                 div [] (List.map drawCourse model.courses)
                 ]
         else
             div [] [
