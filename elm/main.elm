@@ -30,42 +30,36 @@ type alias Attendee =
     , eventId: Int
     }
 
-type alias AttendeeResponse =
-    {
-      errorCode: Int
+type alias Response data =
+    { errorCode: Int
     , errorMessage: String
-    , data : Attendee
+    , data: data
     }
 
-type alias EventResponse =
-    {
-      errorCode: Int
-    , errorMessage: String
-    , data : Event
+-- to maintain backward compat (but I'd prob just use 'Response n' where needed):
+type alias AttendeeResponse = Response Attendee
+type alias EventResponse = Response Event
+type alias CoursesResponse = Response (List BaseCourse)
+type alias OptionsResponse = Response (List BaseOption)
+
+{-
+-- an alternate way of writing Response to capture whether an error occurred or not
+-- in the types:
+type alias AltResponse data =
+    { error : ResponseError
+    , data : data
     }
 
-
-type alias CoursesResponse =
-    {
-      errorCode: Int
-    , errorMessage: String
-    , data : List BaseCourse
-    }
-
-
-type alias OptionsResponse =
-    {
-      errorCode: Int
-    , errorMessage: String
-    , data : List BaseOption
-    }
+-- used in our alt response; the error is either NoError or an Error with
+-- an int code and a string message:
+type ResponseError = NoError | Error Int String
+-}
 
 type alias Event =
     { name : String
     , location : String
     , time : String
     }
-
 
 type alias BaseCourse =
     { id : Int
@@ -77,8 +71,6 @@ type alias BaseOption =
     , name : String
     , description : String
     }
-
-
 
 type alias Course =
     { id : Int
@@ -128,7 +120,12 @@ emptyCourses =
 
 model : Model
 model =
-    { loaded = False, loggedIn = False, attendee = emptyAttendee, event = emptyEvent, courses = emptyCourses, form = emptyFormFields }
+    { loaded = False
+    , loggedIn = False
+    , attendee = emptyAttendee
+    , event = emptyEvent
+    , courses = emptyCourses
+    , form = emptyFormFields }
 
 
 init : ( Model, Cmd Msg )
@@ -143,7 +140,14 @@ apiEndpoint = "/api"
 
 
 type Msg
-    = Noop | SetAttendee AttendeeResponse | FailAttendee Http.Error | FormLoginKey String | DoLogin | SetEvent EventResponse | SetCourses CoursesResponse | SetOptions Int OptionsResponse
+    = Noop
+    | SetAttendee AttendeeResponse
+    | FailAttendee Http.Error
+    | FormLoginKey String
+    | DoLogin
+    | SetEvent EventResponse
+    | SetCourses CoursesResponse
+    | SetOptions Int OptionsResponse
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -180,29 +184,33 @@ makeFromBase bse = { id = bse.id, name = bse.name, options = []}
 
 -- SUBSCRIPTIONS
 
+responseDecoder : Json.Decoder data -> Json.Decoder (Response data)
+responseDecoder dataDecoder =
+    Json.object3 Response
+        ("errorCode" := Json.int)
+        ("errorMessage" := Json.string)
+        ("data" := dataDecoder)
+
+attendeeDecoder : Json.Decoder Attendee
+attendeeDecoder =
+    Json.object4 Attendee
+        ("id" := Json.int)
+        ("name" := string)
+        ("email" := string)
+        ("eventId" := Json.int)
+
+eventDecoder : Json.Decoder EventResponse
+eventDecoder =
+    Json.object3 Event
+        ("name" := string)
+        ("location" := string)
+        ("date" := string)
 
 attendeeResponseDecoder : Json.Decoder AttendeeResponse
-attendeeResponseDecoder =
-    Json.object3 AttendeeResponse
-        ("errorCode" := Json.int)
-        ("errorMessage" := string)
-        ("data" := Json.object4 Attendee
-                           ("id" := Json.int)
-                           ("name" := string)
-                           ("email" := string)
-                           ("eventId" := Json.int)
-                           )
+attendeeResponseDecoder = responseDecoder attendeeDecoder
 
 eventResponseDecoder : Json.Decoder EventResponse
-eventResponseDecoder =
-    Json.object3 EventResponse
-        ("errorCode" := Json.int)
-        ("errorMessage" := string)
-        ("data" := Json.object3 Event
-                           ("name" := string)
-                           ("location" := string)
-                           ("date" := string)
-                           )
+eventResponseDecoder = responseDecoder eventDecoder
 
 baseCourseDecoder : Json.Decoder BaseCourse
 baseCourseDecoder =
@@ -231,8 +239,6 @@ optionsResponseDecoder =
         ("errorCode" := Json.int)
         ("errorMessage" := string)
         ("data" := (Json.list baseOptionDecoder))
-
-
 
 
 subscriptions : Model -> Sub Msg
@@ -274,15 +280,15 @@ loadOptions crs =
 drawOption : Option -> VirtualDom.Node a
 drawOption opt =
     div [] [
-        div [] [ text (toString opt.name)],
-        div [] [ text (toString opt.description) ]
+        div [] [ text opt.name ],
+        div [] [ text opt.description ]
     ]
 
 
 drawCourse : Course -> VirtualDom.Node a
 drawCourse crs =
     div [] [
-        div [] [ text (toString crs.name)],
+        div [] [ text crs.name ],
         div [] (List.map drawOption crs.options)
     ]
 
@@ -293,8 +299,8 @@ view model =
         if model.loggedIn then
             div []
                 [
-                 div [] [ text (toString model.attendee.name), text (toString model.attendee.email) ],
-                 div [] [ text (toString model.event.name), text (toString model.event.location) ],
+                 div [] [ text model.attendee.name, text model.attendee.email ],
+                 div [] [ text model.event.name, text model.event.location ],
                  div [] (List.map drawCourse model.courses)
                 ]
         else
