@@ -32,3 +32,5 @@ elm-stuff
 npm-debug.log
 
 htdocs/elm.js
+
+go/bin

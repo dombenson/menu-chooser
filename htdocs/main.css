@@ -82,6 +82,11 @@ body {
     cursor: pointer;
 }
 
+.option:hover {
+    background-color: yellowgreen;
+}
+
+
 .option.selected {
     background-color: yellowgreen;
     background-image: url(tick.svg);
@@ -93,4 +98,25 @@ body {
 .option > .description {
     padding-left: 1em;
     font-size: 0.8em;
+}
+
+.login .title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.login .body {
+    padding: 0.5em;
+}
+.login .info {
+    font-size: 0.8em;
+    padding: 0.5em;
+}
+
+button {
+    padding: 0.3em;
+    margin: 0.3em;
+}
+
+input {
+    font-family: monospace;
 }

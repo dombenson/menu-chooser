@@ -480,15 +480,16 @@ drawCourse crses crsId =
 
 drawNotLoggedIn : Model -> Html Msg
 drawNotLoggedIn model =
-    div []
-        [ div [] [ text "Please log in" ]
+    div [ class "login" ]
+        [ div [ class "title" ] [ text "Please log in" ]
+        , div [ class "body" ] [ div [ class "info" ] [ text "Enter the code from your invitation email" ]
         , div []
             [ input [ type' "text", onInput FormLoginKey ] []
             ]
         , div []
             [ button [ onClick DoLogin ] [ text "Login" ]
             ]
-        ]
+        ] ]
 
 
 drawLoading : Model -> Html a
