@@ -83,6 +83,7 @@ body {
     padding-left: 3em;
     border-radius: 0.5em;
     cursor: pointer;
+    position: relative;
 }
 
 .option:hover {
@@ -96,6 +97,19 @@ body {
     background-position: 0.2em 0.3em;
     background-size: auto 2.5em;
     background-repeat: no-repeat;
+}
+
+.option .saved {
+    display: none;
+    position: absolute;
+    color: #a33;
+    font-size: 0.8em;
+    right: 1em;
+    top: 1em;
+}
+
+.option.selected .saved {
+    display: block;
 }
 
 .option > .description {
@@ -123,3 +137,4 @@ button {
 input {
     font-family: monospace;
 }
+

@@ -23,6 +23,7 @@ func main() {
 	attRouter := attendeeRouter.Get()
 
 	topRouter.HandleFuncC(pat.Get("/login/:token"), auth.LoginAttendee)
+        topRouter.HandleFuncC(pat.Post("/login"), auth.LoginAttendeePost)
 	topRouter.HandleFuncC(pat.Options("/*"), sendCors)
 	topRouter.HandleFuncC(pat.Post("/adminlogin"), auth.LoginUser)
 	topRouter.HandleFuncC(pat.Get("/logout"), auth.Logout)

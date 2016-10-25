@@ -378,9 +378,9 @@ loginAttendee : String -> Cmd Msg
 loginAttendee tok =
     let
         url =
-            apiEndpoint ++ "/login/" ++ tok
+            apiEndpoint ++ "/login"
     in
-        Task.perform FailAttendee SetAttendee (Http.get attendeeResponseDecoder url)
+        Task.perform FailAttendee SetAttendee (Http.post attendeeResponseDecoder url (Http.string tok))
 
 
 loadAttendee : String -> Cmd Msg
@@ -460,6 +460,7 @@ drawOption crsId opts optId =
             div [ onClick selectThis, class className ]
                 [ div [ class "name" ] [ text opt.name ]
                 , div [ class "description" ] [ text opt.description ]
+                , div [ class "saved" ] [ text "Saved" ]
                 ]
 
 
