@@ -113,6 +113,7 @@ type alias Model =
     , courseInfo : CourseDict
     , courses : List Int
     , form : FormFields
+    , allChosen: Bool
     }
 
 
@@ -155,6 +156,7 @@ model =
     , courseInfo = (Dict.empty)
     , courses = emptyCourses
     , form = emptyFormFields
+    , allChosen = False
     }
 
 
@@ -232,7 +234,9 @@ update msg model =
                 curCourses =
                     model.courseInfo
             in
-                ( { model | courseInfo = Dict.update crsId (insertSelection selRes.data) curCourses }, Cmd.none )
+               let newCourses = Dict.update crsId (insertSelection selRes.data) curCourses
+               in
+                 ( { model | courseInfo = newCourses, allChosen = checkSelection newCourses }, Cmd.none )
 
         DoLogin ->
             let
@@ -241,6 +245,13 @@ update msg model =
             in
                 ( { model | loaded = False }, loginAttendee useTok )
 
+checkSelection : CourseDict -> Bool
+checkSelection courseInfo =
+     List.all checkOneCourseSelection (Dict.values courseInfo)
+
+checkOneCourseSelection : Course -> Bool
+checkOneCourseSelection course =
+     List.any .selected (Dict.values course.optionInfo)
 
 runUpdate : msg -> Cmd msg
 runUpdate toExec =
@@ -510,15 +521,19 @@ view model =
 
                 evtDate =
                     Date.fromString model.event.date |> Result.withDefault (Date.fromTime 0)
+                className =
+                    if model.allChosen then "complete loaded" else "loaded"
             in
-                div [ class "loaded" ]
+                div [ class className ]
                     [ div [ id "header" ]
                         [ div [ class "attendee" ] [ span [ class "name" ] [ text model.attendee.name ] ]
                         , div [ class "event" ] [ span [ class "name" ] [ text model.event.name ], span [ class "location" ] [ text model.event.location ], span [ class "date" ] [ text ((toString (Date.day evtDate)) ++ " " ++ (toString (Date.month evtDate)) ++ " " ++ (toString (Date.year evtDate))) ], span [ class "time" ] [ text ((toString (Date.hour evtDate)) ++ ":" ++ (String.pad 2 '0' (toString (Date.minute evtDate)))) ] ]
+                        , div [ class "completed summary" ] [ text "You're all done :)" ]
                         ]
                     , div [ id "body" ]
                         [ div [ id "courses" ] (List.map crsRendr model.courses)
                         ]
+                    , div [ id "footer" ] [ div [ class "completed" ] [ text "All done!", div [ class "description" ] [ text "Your selections have been saved, you can close the page, change your selection, or come back later." ]  ] ]
                     ]
         else
             drawNotLoggedIn model

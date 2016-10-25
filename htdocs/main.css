@@ -138,3 +138,21 @@ input {
     font-family: monospace;
 }
 
+.completed {
+    border-radius: 0.5em;
+    padding: 1em;
+    background-color: green;
+    color: white;
+    display: none;
+    font-weight: bold;
+    margin: 1em 0;
+}
+
+.complete .completed {
+    display: block;
+}
+
+.completed .description {
+    font-size: 0.8em;
+    font-weight: normal;
+}
