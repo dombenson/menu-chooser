@@ -15,13 +15,13 @@ body {
     z-index: -1;
 }
 
-#holder {
+#my-app {
     width: 100%;
     height: 100%;
     position: absolute;
 }
 
-#underlay {
+#my-app > div {
     background-color: #f0f0f0;
     opacity:1;
     padding: 4em;
@@ -32,6 +32,10 @@ body {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
+}
+
+#my-app > div.loaded {
+    width: 35em;
 }
 
 *::before, *::after {
@@ -60,4 +64,33 @@ body {
 }
 .event .time:before {
     content: " at "
+}
+
+.course {
+    padding: 1em;
+}
+
+.course > .name {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.option {
+    padding: 1em;
+    padding-left: 3em;
+    border-radius: 0.5em;
+    cursor: pointer;
+}
+
+.option.selected {
+    background-color: yellowgreen;
+    background-image: url(tick.svg);
+    background-position: 0.2em 0.3em;
+    background-size: auto 2.5em;
+    background-repeat: no-repeat;
+}
+
+.option > .description {
+    padding-left: 1em;
+    font-size: 0.8em;
 }
