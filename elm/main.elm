@@ -8,6 +8,7 @@ import Random
 import Task
 import Date
 import Http
+import String
 import Dict
 import Json.Decode as Json exposing (Decoder, decodeValue, succeed, string, oneOf, null, list, bool, (:=), andThen)
 
@@ -58,7 +59,7 @@ type alias Response data =
 type alias Event =
     { name : String
     , location : String
-    , time : String
+    , date : String
     }
 
 
@@ -78,7 +79,8 @@ type alias BaseOption =
 type alias Course =
     { id : Int
     , name : String
-    , options : List Option
+    , options : List Int
+    , optionInfo : OptionDict
     }
 
 
@@ -94,7 +96,14 @@ type alias FormFields =
     { loginKey : String
     }
 
-type alias CourseDict = Dict.Dict Int Course
+
+type alias CourseDict =
+    Dict.Dict Int Course
+
+
+type alias OptionDict =
+    Dict.Dict Int Option
+
 
 type alias Model =
     { loaded : Bool
@@ -119,12 +128,18 @@ emptyAttendee =
 
 emptyEvent : Event
 emptyEvent =
-    { name = "", location = "", time = "" }
+    { name = "", location = "", date = "" }
 
 
 emptyCourse : Course
 emptyCourse =
-    { id = 0, name = "", options = []}
+    { id = 0, name = "", options = [], optionInfo = Dict.empty }
+
+
+emptyOption : Option
+emptyOption =
+    { id = 0, name = "", description = "", selected = False }
+
 
 emptyCourses : List Int
 emptyCourses =
@@ -149,7 +164,7 @@ init =
 
 
 apiEndpoint =
-    "/api"
+    "api"
 
 
 
@@ -160,17 +175,23 @@ type Msg
     = Noop
     | SetAttendee (Response Attendee)
     | FailAttendee Http.Error
+    | FailNoop Http.Error
     | FormLoginKey String
     | DoLogin
     | SetEvent (Response Event)
     | SetCourses (Response (List BaseCourse))
     | SetOptions Int (Response (List BaseOption))
+    | SetSelection Int (Response (Int))
+    | TriggerSetSelection Int Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Noop ->
+            ( model, Cmd.none )
+
+        FailNoop _ ->
             ( model, Cmd.none )
 
         SetAttendee newAtt ->
@@ -190,12 +211,28 @@ update msg model =
                 ( { model | form = { curForm | loginKey = key } }, Cmd.none )
 
         SetCourses crsRes ->
-            let newCourses = List.map .id crsRes.data in
-            ( { model | courses = newCourses, courseInfo = Dict.fromList(List.map makeTupleFromBase crsRes.data) }, Cmd.batch (List.map loadOptions newCourses) )
+            let
+                newCourses =
+                    List.map .id crsRes.data
+            in
+                ( { model | courses = newCourses, courseInfo = Dict.fromList (List.map makeTupleFromBase crsRes.data) }, Cmd.batch (List.map loadOptions newCourses) )
 
         SetOptions crsId crsRes ->
-            let curCourses = model.courseInfo in
-            ( {model | courseInfo = Dict.update crsId (insertOpts crsRes.data) curCourses} , Cmd.none )
+            let
+                curCourses =
+                    model.courseInfo
+            in
+                ( { model | courseInfo = Dict.update crsId (insertOpts crsRes.data) curCourses }, loadSel crsId )
+
+        TriggerSetSelection crsId selId ->
+            ( model, setSel crsId selId )
+
+        SetSelection crsId selRes ->
+            let
+                curCourses =
+                    model.courseInfo
+            in
+                ( { model | courseInfo = Dict.update crsId (insertSelection selRes.data) curCourses }, Cmd.none )
 
         DoLogin ->
             let
@@ -209,21 +246,51 @@ runUpdate : msg -> Cmd msg
 runUpdate toExec =
     Task.perform identity identity (Task.succeed toExec)
 
-makeTupleFromBase : BaseCourse -> (Int, Course)
+
+makeTupleFromBase : BaseCourse -> ( Int, Course )
 makeTupleFromBase bse =
-    (bse.id, { id = bse.id, name = bse.name, options = [] })
+    ( bse.id, { emptyCourse | id = bse.id, name = bse.name } )
+
+
+makeOptionTupleFromBase : BaseOption -> ( Int, Option )
+makeOptionTupleFromBase bse =
+    ( bse.id, { id = bse.id, name = bse.name, description = bse.description, selected = False } )
+
 
 makeOptFromBase : BaseOption -> Option
 makeOptFromBase bse =
     { id = bse.id, name = bse.name, description = bse.description, selected = False }
 
+
 insertOpts : List BaseOption -> Maybe Course -> Maybe Course
 insertOpts opts mbeCourse =
     case mbeCourse of
         Just course ->
-            Just {course | options = List.map makeOptFromBase opts}
+            Just { course | options = List.map .id opts, optionInfo = Dict.fromList (List.map makeOptionTupleFromBase opts) }
+
         Nothing ->
             Nothing
+
+
+selectIfMatch : Int -> Int -> Option -> Option
+selectIfMatch selId curId curOpt =
+    { curOpt | selected = (selId == curId) }
+
+
+insertSelection : Int -> Maybe Course -> Maybe Course
+insertSelection selId mbeCourse =
+    case mbeCourse of
+        Just course ->
+            let
+                curOpts =
+                    course.optionInfo
+            in
+                Just { course | optionInfo = Dict.map (selectIfMatch selId) curOpts }
+
+        Nothing ->
+            Nothing
+
+
 
 -- SUBSCRIPTIONS
 
@@ -294,6 +361,14 @@ optionsResponseDecoder =
         ("data" := (Json.list baseOptionDecoder))
 
 
+selectionResponseDecoder : Json.Decoder (Response (Int))
+selectionResponseDecoder =
+    Json.object3 Response
+        ("errorCode" := Json.int)
+        ("errorMessage" := string)
+        ("data" := Json.int)
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
@@ -344,25 +419,63 @@ loadOptions crsId =
         Task.perform FailAttendee (SetOptions crsId) (Http.get optionsResponseDecoder url)
 
 
+loadSel : Int -> Cmd Msg
+loadSel crsId =
+    let
+        url =
+            apiEndpoint ++ "/user/selection/" ++ (toString crsId)
+    in
+        Task.perform FailNoop (SetSelection crsId) (Http.get selectionResponseDecoder url)
+
+
+setSel : Int -> Int -> Cmd Msg
+setSel crsId selId =
+    let
+        url =
+            apiEndpoint ++ "/user/selection/" ++ (toString crsId)
+    in
+        Task.perform FailNoop (SetSelection crsId) (Http.post selectionResponseDecoder url (Http.string (toString selId)))
+
+
 
 -- VIEW
 
 
-drawOption : Option -> Html a
-drawOption opt =
-    div []
-        [ div [] [ text opt.name ]
-        , div [] [ text opt.description ]
-        ]
+drawOption : Int -> OptionDict -> Int -> Html Msg
+drawOption crsId opts optId =
+    let
+        opt =
+            Maybe.withDefault emptyOption (Dict.get optId opts)
+
+        selectThis =
+            TriggerSetSelection crsId optId
+    in
+        let
+            className =
+                if opt.selected then
+                    "selected option"
+                else
+                    "option"
+        in
+            div [ onClick selectThis, class className ]
+                [ div [ class "name" ] [ text opt.name ]
+                , div [ class "description" ] [ text opt.description ]
+                ]
 
 
-drawCourse : CourseDict -> Int -> Html a
+drawCourse : CourseDict -> Int -> Html Msg
 drawCourse crses crsId =
-    let crs = Maybe.withDefault emptyCourse (Dict.get crsId crses)  in
-    div []
-        [ div [] [ text crs.name ]
-        , div [] (List.map drawOption crs.options)
-        ]
+    let
+        crs =
+            Maybe.withDefault emptyCourse (Dict.get crsId crses)
+
+        optRendr =
+            drawOption crsId crs.optionInfo
+    in
+        div [ class "course" ]
+            [ div [ class "name" ] [ text crs.name ]
+            , div [ class "options" ] (List.map optRendr crs.options)
+            ]
 
 
 drawNotLoggedIn : Model -> Html Msg
@@ -389,12 +502,22 @@ view : Model -> Html Msg
 view model =
     if model.loaded then
         if model.loggedIn then
-            let crsRendr = drawCourse model.courseInfo in
-            div []
-                [ div [] [ text model.attendee.name, text model.attendee.email ]
-                , div [] [ text model.event.name, text model.event.location ]
-                , div [] (List.map crsRendr model.courses)
-                ]
+            let
+                crsRendr =
+                    drawCourse model.courseInfo
+
+                evtDate =
+                    Date.fromString model.event.date |> Result.withDefault (Date.fromTime 0)
+            in
+                div [ class "loaded" ]
+                    [ div [ id "header" ]
+                        [ div [ class "attendee" ] [ span [ class "name" ] [ text model.attendee.name ] ]
+                        , div [ class "event" ] [ span [ class "name" ] [ text model.event.name ], span [ class "location" ] [ text model.event.location ], span [ class "date" ] [ text ((toString (Date.day evtDate)) ++ " " ++ (toString (Date.month evtDate)) ++ " " ++ (toString (Date.year evtDate))) ], span [ class "time" ] [ text ((toString (Date.hour evtDate)) ++ ":" ++ (String.pad 2 '0' (toString (Date.minute evtDate)))) ] ]
+                        ]
+                    , div [ id "body" ]
+                        [ div [ id "courses" ] (List.map crsRendr model.courses)
+                        ]
+                    ]
         else
             drawNotLoggedIn model
     else
