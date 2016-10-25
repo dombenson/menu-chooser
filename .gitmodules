@@ -1,0 +1,21 @@
+[submodule "go-ini"]
+	path = go/src/github.com/dombenson/go-ini
+	url = https://github.com/dombenson/go-ini.git
+
+[submodule "go-mysql"]
+	path = go/src/github.com/go-sql-driver/mysql
+	url = https://github.com/go-sql-driver/mysql
+
+[submodule "goji"]
+	path = go/src/goji.io
+	url = https://github.com/goji/goji
+
+[submodule "go-crypto"]
+	path = go/src/golang.org/x/crypto
+	url = https://go.googlesource.com/crypto
+
+[submodule "go-net"]
+	path = go/src/golang.org/x/net
+	url = https://go.googlesource.com/net
+
+
