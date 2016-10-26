@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+        "menud/config"
 )
 
 type attendee struct {
@@ -45,6 +46,10 @@ func (this *attendee) GetToken() string {
 	strId := fmt.Sprintf("%d", this.id)
 	idLen := len(strId)
 	return fmt.Sprintf("%d%d%s", idLen, this.id, this.getAuthToken())
+}
+
+func (this *attendee) GetLoginURL() string {
+        return fmt.Sprintf("%s%s/api/login/%s", config.ExternalHost(), config.PathPrefix(), this.GetToken())
 }
 
 func (this *attendee) MarshalJSON() ([]byte, error) {

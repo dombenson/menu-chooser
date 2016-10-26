@@ -31,6 +31,11 @@ const testSection = "test"
 const testHost = "host"
 const testEnabled = "enabled"
 
+const emailSection = "email"
+const sender = "sender"
+const server = "server"
+const port = "port"
+
 var iniFile ini.Getter
 
 func init() {
@@ -99,4 +104,14 @@ func CorsEnabled() bool {
 
 func CorsOrigin() string {
 	return getWithDefault(testSection, testHost, "")
+}
+
+func MailServer() string {
+	server := getWithDefault(emailSection, server, "localhost")
+	port := getIntWithDefault(emailSection, port, 25)
+	return fmt.Sprintf("%s:%d", server, port)
+}
+
+func MailSender() string {
+	return getWithDefault(emailSection, sender, "menud@localhost")
 }
