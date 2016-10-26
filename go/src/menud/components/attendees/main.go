@@ -13,7 +13,7 @@ type Attendee interface {
 	Email() string
 	VerifyToken(string) error
 	GetToken() string
-        GetLoginURL() string
+	GetLoginURL() string
 	json.Marshaler
 }
 

@@ -26,6 +26,7 @@ func getEventRtr() *goji.Mux {
 	eventRtr := goji.SubMux()
 	eventRtr.HandleFuncC(pat.Get("/attendees"), getEventAttendees)
 	eventRtr.HandleFuncC(pat.Get("/courses"), getEventCourses)
+	eventRtr.HandleFuncC(pat.Get("/summary"), getEventCSV)
 
 	eventRtr.HandleFuncC(pat.Post("/delete"), delEvent)
 	eventRtr.HandleFuncC(pat.Post(""), setEventDetails)

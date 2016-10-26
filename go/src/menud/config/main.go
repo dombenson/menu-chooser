@@ -79,7 +79,7 @@ func ConnectionPoolSize() int {
 }
 
 func BindString() string {
-	return fmt.Sprintf("%s:%d", getWithDefault(bindSection, bindAddr, "127.0.0.1"), getIntWithDefault(bindSection, bindAddr, 8000))
+	return fmt.Sprintf("%s:%d", getWithDefault(bindSection, bindAddr, "127.0.0.1"), getIntWithDefault(bindSection, bindPort, 8000))
 }
 
 func CookieName() string {

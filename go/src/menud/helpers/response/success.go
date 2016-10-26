@@ -13,10 +13,10 @@ func Send(w http.ResponseWriter, data interface{}) {
 }
 
 func SendRedir(w http.ResponseWriter) {
-        SendCorsHeaders(w)
-        w.WriteHeader(200)
+	SendCorsHeaders(w)
+	w.WriteHeader(200)
 
-        strHtml := fmt.Sprintf(`<html><head><meta http-equiv="refresh" content="0; url=%s%s/"></head><body>Logging in</body></html>`, config.ExternalHost(), config.PathPrefix())
+	strHtml := fmt.Sprintf(`<html><head><meta http-equiv="refresh" content="0; url=%s%s/"></head><body>Logging in</body></html>`, config.ExternalHost(), config.PathPrefix())
 	w.Write([]byte(strHtml))
-        return	
+	return
 }
