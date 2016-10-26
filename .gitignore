@@ -32,5 +32,6 @@ elm-stuff
 npm-debug.log
 
 htdocs/elm.js
+htdocs/admin.js
 
 go/bin

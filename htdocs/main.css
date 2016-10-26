@@ -55,7 +55,7 @@ body {
     content: "!";
 }
 
-.event:before {
+#header .event:before {
     content: "You've been invited to: "
 }
 
@@ -155,4 +155,14 @@ input {
 .completed .description {
     font-size: 0.8em;
     font-weight: normal;
+}
+
+a {
+    text-decoration: underline;
+    color: darkgreen;
+    cursor: pointer;
+}
+
+a:visited {
+    color: green;
 }

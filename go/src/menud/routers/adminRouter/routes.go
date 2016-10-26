@@ -16,3 +16,7 @@ func getEvents(ctx context.Context, w http.ResponseWriter, _ *http.Request) {
 	}
 	response.Send(w, ents)
 }
+func getUser(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	att := ctx.Value(UserContextKey).(users.User)
+	response.Send(w, att)
+}

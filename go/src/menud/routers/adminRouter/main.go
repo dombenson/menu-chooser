@@ -11,6 +11,7 @@ func Get() *goji.Mux {
 	eventRtr := getEventRtr()
 	courseRtr := getCourseRtr()
 
+	rtr.HandleFuncC(pat.Get("/me"), getUser)
 	rtr.HandleFuncC(pat.Get("/events"), getEvents)
 	rtr.HandleFuncC(pat.Post("/events/new"), newEvent)
 

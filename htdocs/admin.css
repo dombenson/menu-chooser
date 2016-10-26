@@ -1,0 +1,33 @@
+
+.user .name::before {
+    content: "Hi ";
+}
+.user, .event {
+    font-weight: bold;
+}
+.user:after {
+    content: "!";
+}
+
+#body {
+    padding-top: 1em;
+}
+
+#events {
+    padding-left: 1em;
+}
+
+.event {
+    padding: 1em 0;
+}
+
+input[type=text], input[type=password] {
+    width: 20em;
+    display: block;
+    margin: 0.5em 0 1em;
+}
+
+#my-app > div {
+    width: 25em;
+    padding: 4em 2em;
+}
