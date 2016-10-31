@@ -25,6 +25,7 @@ type connection struct {
 	getOptionsStmt        *sql.Stmt
 	getSelectionStmt      *sql.Stmt
 	setSelectionStmt      *sql.Stmt
+	pingStmt              *sql.Stmt
 }
 
 func (this *connection) connect() {
@@ -32,6 +33,10 @@ func (this *connection) connect() {
 	this.baseConn, err = sql.Open("mysql", config.DBConnString())
 	if err != nil {
 		panic("Unable to connect to database")
+	}
+	this.pingStmt, err = this.baseConn.Prepare("SELECT `eventid` FROM `events` LIMIT 1")
+	if err != nil {
+		panic("Unable to prepare ping statement: " + err.Error())
 	}
 	this.getUserStmt, err = this.baseConn.Prepare(users.GetUserSQL)
 	if err != nil {
@@ -310,6 +315,11 @@ func (this *connection) SetSelection(attendeeId, courseId, optionId int) (outOpt
 	return
 }
 
-func (this *connection) Ping() (error) {
-	return this.baseConn.Ping()
+func (this *connection) Ping() (err error) {
+	err = this.baseConn.Ping()
+	if err != nil {
+		return
+	}
+	_, err := this.pingStmt.Exec()
+	return
 }

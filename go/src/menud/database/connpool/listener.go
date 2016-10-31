@@ -43,7 +43,7 @@ func (this *pooledConnection) listen() {
 			this.handleGetSelection(req)
 		case req := <-setSelectionChan:
 			this.handleSetSelection(req)
-		case <- time.After(10*time.Second):
+		case <- time.After(5*time.Second):
 			this.handlePing()
 		case req := <-shutDownChan:
 			shutDownChan <- req
