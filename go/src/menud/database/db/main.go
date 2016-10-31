@@ -23,6 +23,7 @@ type Connection interface {
 	GetEventsForUser(userId int) (events []events.Event, err error)
 	GetSelection(attendeeId, courseId int) (optionId int, err error)
 	SetSelection(attendeeId, courseId, selectionId int) (optionId int, err error)
+	Ping() (error)
 }
 
 func GetConnection() Connection {

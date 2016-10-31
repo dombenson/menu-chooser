@@ -309,3 +309,7 @@ func (this *connection) SetSelection(attendeeId, courseId, optionId int) (outOpt
 	outOptionId = optionId
 	return
 }
+
+func (this *connection) Ping() (error) {
+	return this.baseConn.Ping()
+}

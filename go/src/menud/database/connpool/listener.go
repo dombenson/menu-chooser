@@ -2,6 +2,8 @@ package connpool
 
 import (
 	"menud/database/db"
+	"time"
+	"fmt"
 )
 
 type pooledConnection struct {
@@ -41,10 +43,30 @@ func (this *pooledConnection) listen() {
 			this.handleGetSelection(req)
 		case req := <-setSelectionChan:
 			this.handleSetSelection(req)
+		case <- time.After(10*time.Second):
+			this.handlePing()
 		case req := <-shutDownChan:
 			shutDownChan <- req
 			break
 		}
+	}
+}
+
+func (this *pooledConnection) reconnect() {
+	defer func() {
+		if r:= recover(); r != nil {
+			fmt.Println("Connection error, retrying", r)
+			time.Sleep(5 * time.Second)
+			this.reconnect()
+		}
+	}()
+	this.setUp()
+}
+
+func (this *pooledConnection) handlePing() {
+	err := this.dbConn.Ping()
+	if err != nil {
+		this.reconnect()
 	}
 }
 
