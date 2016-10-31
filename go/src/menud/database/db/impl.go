@@ -158,7 +158,7 @@ func (this *connection) GetAttendees(eventId int) (atts []attendees.Attendee, er
 }
 
 func (this *connection) GetAttendeeByKey(token string) (attendee attendees.Attendee, err error) {
-	id, key := attendees.ParseToken(token)
+	id, key, version := attendees.ParseToken(token)
 	if (id == 0) || (key == "") {
 		err = errors.New("Bad Request")
 		return
@@ -167,7 +167,7 @@ func (this *connection) GetAttendeeByKey(token string) (attendee attendees.Atten
 	if err != nil {
 		return
 	}
-	err = attendee.VerifyToken(key)
+	err = attendee.VerifyToken(key, version)
 	return
 }
 

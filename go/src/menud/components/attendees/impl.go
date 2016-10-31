@@ -30,22 +30,29 @@ func (this *attendee) Name() string {
 func (this *attendee) Email() string {
 	return this.email
 }
-func (this *attendee) VerifyToken(authToken string) error {
-	if authToken == this.getAuthToken() {
+func (this *attendee) VerifyToken(authToken string, version int) error {
+	if authToken == this.getAuthToken(version) {
 		return nil
 	}
 	return errors.New("Token invalid")
 }
-func (this *attendee) getAuthToken() string {
+func (this *attendee) getAuthToken(version int) string {
 	mac := hmac.New(sha512.New, []byte(this.key))
 	mac.Write([]byte(fmt.Sprintf("%d:%s", this.id, this.email)))
 	bytes := mac.Sum(nil)
-	return base64.StdEncoding.EncodeToString(bytes[12:20])
+	if version == 0 {
+		return base64.StdEncoding.EncodeToString(bytes[12:20])
+	}
+	if version == 1 {
+		return base64.URLEncoding.EncodeToString(bytes[12:21])
+	}
+	panic(errors.New(fmt.Sprintf("Auth token version %d not defined", version)))
 }
 func (this *attendee) GetToken() string {
+	useVersion := 1
 	strId := fmt.Sprintf("%d", this.id)
 	idLen := len(strId)
-	return fmt.Sprintf("%d%d%s", idLen, this.id, this.getAuthToken())
+	return fmt.Sprintf("v%d%d%d%s", useVersion, idLen, this.id, this.getAuthToken(useVersion))
 }
 
 func (this *attendee) GetLoginURL() string {
