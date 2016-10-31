@@ -320,6 +320,6 @@ func (this *connection) Ping() (err error) {
 	if err != nil {
 		return
 	}
-	_, err := this.pingStmt.Exec()
+	_, err = this.pingStmt.Exec()
 	return
 }

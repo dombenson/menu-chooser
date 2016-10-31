@@ -96,8 +96,8 @@
       <file leaf-file-name="impl.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/go/src/menud/database/db/impl.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1053">
-              <caret line="319" column="23" selection-start-line="319" selection-start-column="23" selection-end-line="319" selection-end-column="23" />
+            <state relative-caret-position="1140">
+              <caret line="322" column="15" selection-start-line="322" selection-start-column="15" selection-end-line="322" selection-end-column="15" />
               <folding>
                 <element signature="e#12#203#0" expanded="true" />
               </folding>
@@ -733,12 +733,12 @@
       <workItem from="1477415408246" duration="2913000" />
       <workItem from="1477467247268" duration="1813000" />
       <workItem from="1477477270331" duration="4718000" />
-      <workItem from="1477932475821" duration="3234000" />
+      <workItem from="1477932475821" duration="3316000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="88391000" />
+    <option name="totallyTimeSpent" value="88473000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="3954" y="42" width="3726" height="2118" extended-state="6" />
@@ -1159,8 +1159,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/go/src/menud/database/db/impl.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1053">
-          <caret line="319" column="23" selection-start-line="319" selection-start-column="23" selection-end-line="319" selection-end-column="23" />
+        <state relative-caret-position="1140">
+          <caret line="322" column="15" selection-start-line="322" selection-start-column="15" selection-end-line="322" selection-end-column="15" />
           <folding>
             <element signature="e#12#203#0" expanded="true" />
           </folding>
