@@ -35,3 +35,5 @@ htdocs/elm.js
 htdocs/admin.js
 
 go/bin
+
+.idea

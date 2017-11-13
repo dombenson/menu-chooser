@@ -6,6 +6,7 @@ import (
 	"menud/components/events"
 	"menud/components/options"
 	"menud/database/connpool"
+	"menud/helpers/email"
 	"menud/helpers/response"
 	"net/http"
 )
@@ -26,6 +27,22 @@ func getEventCourses(ctx context.Context, w http.ResponseWriter, _ *http.Request
 		return
 	}
 	response.Send(w, courses)
+}
+func sendInvites(ctx context.Context, w http.ResponseWriter, _ *http.Request) {
+	event := ctx.Value(EventContextKey).(events.Event)
+	attendees, err := connpool.GetAttendees(event.ID())
+	if err != nil {
+		response.InternalError(w, err)
+		return
+	}
+	for _, att := range attendees {
+		err = email.Send(att)
+		if err != nil {
+			response.InternalError(w, err)
+			return
+		}
+	}
+	response.Send(w, true)
 }
 func newEvent(ctx context.Context, w http.ResponseWriter, _ *http.Request) {
 	response.NotImplemented(w)

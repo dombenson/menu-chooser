@@ -68,6 +68,8 @@ type alias Model =
     , eventList : List Int
     , user : User
     , form : FormFields
+    , curEvt : Event
+    , haveEvt : Bool
     }
 
 
@@ -79,6 +81,8 @@ model =
     , eventList = []
     , user = emptyUser
     , form = emptyFormFields
+    , curEvt = emptyEvent
+    , haveEvt = False
     }
 
 
@@ -100,6 +104,9 @@ type Msg
     | LogOut
     | DoLogin
     | SetEvents (Response (List Event))
+    | SetEvent Event
+    | ClearEvent
+    | InviteEvent Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -141,6 +148,15 @@ update msg model =
                     model.form
             in
                 ( { model | loaded = False }, loginUser useDets )
+
+        SetEvent evt ->
+            ( { model | haveEvt = True, curEvt = evt }, Cmd.none)
+
+        ClearEvent ->
+            ( { model | haveEvt = False, curEvt = emptyEvent }, Cmd.none)
+
+        InviteEvent evtId ->
+            ( model, inviteEvent evtId)
 
         LogOut ->
             ( model, logOutUser "" )
@@ -202,6 +218,13 @@ userResponseDecoder =
         ("errorMessage" := string)
         ("data" := userDecoder)
 
+boolResponseDecoder : Json.Decoder (Response Bool)
+boolResponseDecoder =
+    Json.object3 Response
+        ("errorCode" := Json.int)
+        ("errorMessage" := string)
+        ("data" := Json.bool)
+
 
 makeTupleFromBase : Event -> ( Int, Event )
 makeTupleFromBase bse =
@@ -228,6 +251,13 @@ loginUser form =
     in
         Task.perform FailUser SetUser (Http.post userResponseDecoder url (Http.string reqJSON))
 
+inviteEvent : Int -> Cmd Msg
+inviteEvent evtId =
+    let
+        url =
+            apiEndpoint ++ "/event/" + evtId + "/invite"
+    in
+        Task.perform Cmd.none Cmd.none (Http.post boolResponseDecoder url "")
 
 logOutUser : String -> Cmd Msg
 logOutUser str =
@@ -279,12 +309,16 @@ drawLoading model =
         ]
 
 
-drawEvent : EventDict -> Int -> Html a
-drawEvent evtInfo evtId =
+drawOneEvent : EventDict -> Int -> Html a
+drawOneEvent evtInfo evtId =
     let
         event =
             Maybe.withDefault emptyEvent (Dict.get evtId evtInfo)
     in
+        drawEvent event
+
+drawEvent : Event -> Html a
+drawEvent event =
         div [ class "event" ]
             [ div [ class "name" ] [ text event.name ]
             , div [ class "location" ] [ text event.location ]
@@ -299,22 +333,40 @@ view : Model -> Html Msg
 view model =
     if model.loaded then
         if model.loggedIn then
-            let
-                evtRendr =
-                    drawEvent model.eventInfo
-            in
-                div [ class "loaded" ]
-                    [ div [ id "header" ]
-                        [ div [ class "user" ] [ span [ class "name" ] [ text model.user.name ] ]
+            if model.haveEvt then
+                    div [ class "loaded" ]
+                        [ div [ id "header" ]
+                            [ div [ class "user" ] [ span [ class "name" ] [ text model.user.name ] ]
+                            ]
+                        , div [ id "body" ]
+                            [ div [ id "eventIntro" ] [ (text "These are the events you're organising:") ]
+                            , div [ id "events" ] [ drawEvent model.curEvt ]
+                            , div [ id "actions" ] [
+                                    [ a [ onClick LogOut ] [ text "Log out" ]
+                                ]
+                            ]
+                        , div [ id "footer" ]
+                            [ a [ onClick ClearEvent ] [ text "Back to list" ]
+                            ]
                         ]
-                    , div [ id "body" ]
-                        [ div [ id "eventIntro" ] [ (text "These are the events you're organising:") ]
-                        , div [ id "events" ] (List.map evtRendr model.eventList)
+
+            else
+                let
+                    evtRendr =
+                        drawOneEvent model.eventInfo
+                in
+                    div [ class "loaded" ]
+                        [ div [ id "header" ]
+                            [ div [ class "user" ] [ span [ class "name" ] [ text model.user.name ] ]
+                            ]
+                        , div [ id "body" ]
+                            [ div [ id "eventIntro" ] [ (text "These are the events you're organising:") ]
+                            , div [ id "events" ] (List.map evtRendr model.eventList)
+                            ]
+                        , div [ id "footer" ]
+                            [ a [ onClick LogOut ] [ text "Log out" ]
+                            ]
                         ]
-                    , div [ id "footer" ]
-                        [ a [ onClick LogOut ] [ text "Log out" ]
-                        ]
-                    ]
         else
             drawNotLoggedIn model
     else
