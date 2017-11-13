@@ -263,7 +263,7 @@ inviteEvent : Int -> Cmd Msg
 inviteEvent evtId =
     let
         url =
-            apiEndpoint ++ "/event/" ++ (toString evtId) ++ "/invite"
+            apiEndpoint ++ "/admin/event/" ++ (toString evtId) ++ "/invite"
     in
         Task.perform FailInviteEvent DidInviteEvent (Http.post boolResponseDecoder url (Http.string ""))
 
