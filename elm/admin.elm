@@ -107,12 +107,20 @@ type Msg
     | SetEvent Event
     | ClearEvent
     | InviteEvent Int
+    | DidInviteEvent (Response Bool)
+    | FailInviteEvent Http.Error
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Noop ->
+            ( model, Cmd.none )
+
+        DidInviteEvent _ ->
+            ( model, Cmd.none )
+
+        FailInviteEvent _ ->
             ( model, Cmd.none )
 
         SetUser newUser ->
@@ -255,9 +263,9 @@ inviteEvent : Int -> Cmd Msg
 inviteEvent evtId =
     let
         url =
-            apiEndpoint ++ "/event/" + evtId + "/invite"
+            apiEndpoint ++ "/event/" ++ (toString evtId) ++ "/invite"
     in
-        Task.perform Cmd.none Cmd.none (Http.post boolResponseDecoder url "")
+        Task.perform FailInviteEvent DidInviteEvent (Http.post boolResponseDecoder url (Http.string ""))
 
 logOutUser : String -> Cmd Msg
 logOutUser str =
@@ -324,7 +332,7 @@ drawEvent event =
             , div [ class "location" ] [ text event.location ]
             , div [ class "date" ] [ text (formatDate event.date) ]
             , div [ class "actions" ]
-                [ a [ class "getList", href (apiEndpoint ++ "/admin/event/" ++ (toString evtId) ++ "/summary"), target "new" ] [ text "Get Submissions" ]
+                [ a [ class "getList", href (apiEndpoint ++ "/admin/event/" ++ (toString event.id) ++ "/summary"), target "new" ] [ text "Get Submissions" ]
                 ]
             ]
 
@@ -342,7 +350,7 @@ view model =
                             [ div [ id "eventIntro" ] [ (text "These are the events you're organising:") ]
                             , div [ id "events" ] [ drawEvent model.curEvt ]
                             , div [ id "actions" ] [
-                                    [ a [ onClick LogOut ] [ text "Log out" ]
+                                    a [ onClick LogOut ] [ text "Log out" ]
                                 ]
                             ]
                         , div [ id "footer" ]
