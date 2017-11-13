@@ -350,7 +350,7 @@ view model =
                             [ div [ id "eventIntro" ] [ (text "These are the events you're organising:") ]
                             , div [ id "events" ] [ drawEvent model.curEvt ]
                             , div [ id "actions" ] [
-                                    a [ onClick LogOut ] [ text "Log out" ]
+                                    a [ onClick ( InviteEvent model.curEvt.id ) ] [ text "Send invitations" ]
                                 ]
                             ]
                         , div [ id "footer" ]
