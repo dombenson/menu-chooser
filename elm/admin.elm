@@ -317,7 +317,7 @@ drawLoading model =
         ]
 
 
-drawOneEvent : EventDict -> Int -> Html a
+drawOneEvent : EventDict -> Int -> Html Msg
 drawOneEvent evtInfo evtId =
     let
         event =
@@ -325,10 +325,10 @@ drawOneEvent evtInfo evtId =
     in
         drawEvent event
 
-drawEvent : Event -> Html a
+drawEvent : Event -> Html Msg
 drawEvent event =
         div [ class "event" ]
-            [ div [ class "name" ] [ text event.name ]
+            [ div [ class "name" ] [ a [ onClick (SetEvent event) ] [text event.name ] ]
             , div [ class "location" ] [ text event.location ]
             , div [ class "date" ] [ text (formatDate event.date) ]
             , div [ class "actions" ]
