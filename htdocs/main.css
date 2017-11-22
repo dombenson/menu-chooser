@@ -45,14 +45,18 @@ body {
     font-weight: normal !important;
 }
 
-.attendee .name::before {
+div.attendee .name::before {
     content: "Hi ";
 }
 .attendee, .event {
     font-weight: bold;
 }
-.attendee:after {
+div.attendee:after {
     content: "!";
+}
+
+li.attendee div {
+    display: inline-block;
 }
 
 #header .event:before {

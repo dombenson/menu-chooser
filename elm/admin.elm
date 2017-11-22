@@ -379,11 +379,11 @@ drawOneEvent evtInfo evtId =
 
 drawAttendee : Attendee -> Html Msg
 drawAttendee attendee =
-        div [ class "attendee" ]
+        li [ class "attendee" ]
             [ div [ class "name" ] [ text attendee.name ]
             , div [ class "email" ] [ text attendee.email ]
             , div [ class "actions" ]
-                [ a [ onClick (InviteEventAttendee model.curEvt.id attendee.id) ] [ text "Invite" ]
+                [ a [ onClick (InviteEventAttendee attendee.eventId attendee.id) ] [ text "Invite" ]
                 ]
             ]
 
@@ -412,7 +412,7 @@ view model =
                         , div [ id "body" ]
                             [ div [ id "eventIntro" ] [ (text "These are the events you're organising:") ]
                             , div [ id "events" ] [ drawEvent model.curEvt ]
-                            , div [ id "attendees" ] (List.map drawAttendee model.curEvtAtts)
+                            , ul [ id "attendees" ] (List.map drawAttendee model.curEvtAtts)
                             , div [ id "actions" ] [
                                     a [ onClick ( InviteEvent model.curEvt.id ) ] [ text "Send invitations" ]
                                 ]
