@@ -35,7 +35,8 @@ func getEventRtr() *goji.Mux {
 	eventRtr.HandleFuncC(pat.Post("/attendee/:attendeeId/delete"), delAttendee)
 	eventRtr.HandleFuncC(pat.Post("/attendee/:attendeeId"), setAttendeeDetails)
 	eventRtr.HandleFuncC(pat.Post("/courses/new"), newCourse)
-	eventRtr.HandleFuncC(pat.Post("/invite"), sendInvites)
+	eventRtr.HandleFuncC(pat.Post("/invite/all"), sendInvites)
+	eventRtr.HandleFuncC(pat.Post("/invite/:attendeeId"), sendOneInvite)
 
 	eventRtr.UseC(checkEvent)
 

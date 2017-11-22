@@ -2,6 +2,7 @@ package adminRouter
 
 import (
 	"encoding/csv"
+	"goji.io/pat"
 	"golang.org/x/net/context"
 	"menud/components/events"
 	"menud/components/options"
@@ -9,6 +10,7 @@ import (
 	"menud/helpers/email"
 	"menud/helpers/response"
 	"net/http"
+	"strconv"
 )
 
 func getEventAttendees(ctx context.Context, w http.ResponseWriter, _ *http.Request) {
@@ -41,6 +43,29 @@ func sendInvites(ctx context.Context, w http.ResponseWriter, _ *http.Request) {
 			response.InternalError(w, err)
 			return
 		}
+	}
+	response.Send(w, true)
+}
+func sendOneInvite(ctx context.Context, w http.ResponseWriter, _ *http.Request) {
+	event := ctx.Value(EventContextKey).(events.Event)
+	requestedAttId, err := strconv.Atoi(pat.Param(ctx, "attendeeId"))
+	if err != nil {
+		response.BadInput(w)
+		return
+	}
+	requestedAtt, err := connpool.GetAttendee(requestedAttId)
+	if err != nil {
+		response.BadInput(w)
+		return
+	}
+	if requestedAtt.EventId() != event.ID() {
+		response.BadInput(w)
+		return
+	}
+	err = email.Send(requestedAtt)
+	if err != nil {
+		response.InternalError(w, err)
+		return
 	}
 	response.Send(w, true)
 }

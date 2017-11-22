@@ -30,6 +30,14 @@ type alias Event =
     }
 
 
+type alias Attendee =
+    { id : Int
+    , name : String
+    , email : String
+    , eventId : Int
+    }
+
+
 type alias User =
     { name : String
     , email : String
@@ -69,6 +77,7 @@ type alias Model =
     , user : User
     , form : FormFields
     , curEvt : Event
+    , curEvtAtts : List Attendee
     , haveEvt : Bool
     }
 
@@ -82,6 +91,7 @@ model =
     , user = emptyUser
     , form = emptyFormFields
     , curEvt = emptyEvent
+    , curEvtAtts = []
     , haveEvt = False
     }
 
@@ -105,8 +115,10 @@ type Msg
     | DoLogin
     | SetEvents (Response (List Event))
     | SetEvent Event
+    | DoSetEvent (Response (List Attendee))
     | ClearEvent
     | InviteEvent Int
+    | InviteEventAttendee Int Int
     | DidInviteEvent (Response Bool)
     | FailInviteEvent Http.Error
 
@@ -158,13 +170,19 @@ update msg model =
                 ( { model | loaded = False }, loginUser useDets )
 
         SetEvent evt ->
-            ( { model | haveEvt = True, curEvt = evt }, Cmd.none)
+            ( { model | curEvt = evt }, loadEvtAtts evt.id)
+
+        DoSetEvent attListRes ->
+            ( { model | haveEvt = True, curEvtAtts = attListRes.data }, Cmd.none)
 
         ClearEvent ->
             ( { model | haveEvt = False, curEvt = emptyEvent }, Cmd.none)
 
         InviteEvent evtId ->
             ( model, inviteEvent evtId)
+
+        InviteEventAttendee evtId attId ->
+            ( model, inviteAttendeeEvent evtId attId)
 
         LogOut ->
             ( model, logOutUser "" )
@@ -203,6 +221,14 @@ eventDecoder =
         ("location" := string)
         ("date" := dateDecoder)
 
+attendeeDecoder : Json.Decoder Attendee
+attendeeDecoder =
+    Json.object4 Attendee
+        ("id" := Json.int)
+        ("name" := string)
+        ("email" := string)
+        ("eventId" := Json.int)
+
 
 userDecoder : Json.Decoder User
 userDecoder =
@@ -217,6 +243,15 @@ eventsResponseDecoder =
         ("errorCode" := Json.int)
         ("errorMessage" := string)
         ("data" := (Json.list eventDecoder))
+
+
+
+eventAttsResponseDecoder : Json.Decoder (Response (List Attendee))
+eventAttsResponseDecoder =
+    Json.object3 Response
+        ("errorCode" := Json.int)
+        ("errorMessage" := string)
+        ("data" := (Json.list attendeeDecoder))
 
 
 userResponseDecoder : Json.Decoder (Response User)
@@ -248,6 +283,15 @@ loadEvents msg =
         Task.perform FailUser SetEvents (Http.get eventsResponseDecoder url)
 
 
+loadEvtAtts : Int -> Cmd Msg
+loadEvtAtts evtId =
+    let
+        url =
+            apiEndpoint ++ "/admin/event/" ++ (toString evtId) ++ "/attendees"
+    in
+        Task.perform FailInviteEvent DoSetEvent (Http.get eventAttsResponseDecoder url)
+
+
 loginUser : FormFields -> Cmd Msg
 loginUser form =
     let
@@ -263,7 +307,15 @@ inviteEvent : Int -> Cmd Msg
 inviteEvent evtId =
     let
         url =
-            apiEndpoint ++ "/admin/event/" ++ (toString evtId) ++ "/invite"
+            apiEndpoint ++ "/admin/event/" ++ (toString evtId) ++ "/invite/all"
+    in
+        Task.perform FailInviteEvent DidInviteEvent (Http.post boolResponseDecoder url (Http.string ""))
+
+inviteAttendeeEvent : Int -> Int -> Cmd Msg
+inviteAttendeeEvent evtId attId =
+    let
+        url =
+            apiEndpoint ++ "/admin/event/" ++ (toString evtId) ++ "/invite/" ++ (toString attId)
     in
         Task.perform FailInviteEvent DidInviteEvent (Http.post boolResponseDecoder url (Http.string ""))
 
@@ -325,6 +377,17 @@ drawOneEvent evtInfo evtId =
     in
         drawEvent event
 
+drawAttendee : Attendee -> Html Msg
+drawAttendee attendee =
+        div [ class "attendee" ]
+            [ div [ class "name" ] [ text attendee.name ]
+            , div [ class "email" ] [ text attendee.email ]
+            , div [ class "actions" ]
+                [ a [ onClick (InviteEventAttendee model.curEvt.id attendee.id) ] [ text "Invite" ]
+                ]
+            ]
+
+
 drawEvent : Event -> Html Msg
 drawEvent event =
         div [ class "event" ]
@@ -349,6 +412,7 @@ view model =
                         , div [ id "body" ]
                             [ div [ id "eventIntro" ] [ (text "These are the events you're organising:") ]
                             , div [ id "events" ] [ drawEvent model.curEvt ]
+                            , div [ id "attendees" ] (List.map drawAttendee model.curEvtAtts)
                             , div [ id "actions" ] [
                                     a [ onClick ( InviteEvent model.curEvt.id ) ] [ text "Send invitations" ]
                                 ]
